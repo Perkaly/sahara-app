@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahara v1.5 - SPA</title>
+    <style>
+        :root { --green: #2d5a27; --gold: #bc8a5f; --bg: #fdfaf5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
+        
+        header { background: var(--green); color: white; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 10; }
+        
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        
+        .loading { text-align: center; padding: 50px; color: var(--green); font-weight: bold; }
+        
+        .card { 
+            background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--gold);
+        }
+
+        .ing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .ing-name { font-weight: bold; color: var(--green); font-size: 1.1rem; }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { font-size: 0.7rem; color: #888; display: block; margin-bottom: 3px; }
+        input { 
+            width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; 
+            box-sizing: border-box; font-size: 1rem; background: #fafafa;
+        }
+
+        .result-bar { 
+            background: #f0f7ef; border-radius: 10px; padding: 12px; margin-top: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .cost-val { color: var(--green); font-weight: 800; }
+
+        button.save-btn {
+            background: var(--gold); color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px;
+            cursor: pointer; transition: 0.3s;
+        }
+        button.save-btn:active { transform: scale(0.95); }
+
+        .sync-banner { font-size: 0.7rem; text-align: center; color: var(--green); margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 style="margin:0; font-size: 1.2rem;">Sahara: Gestión de Insumos</h1>
+</header>
+
+<div class="container" id="app">
+    <div class="loading" id="loader">Cargando datos desde Sheets...</div>
+    <div id="content" style="display:none;">
+        <div class="sync-banner" id="syncMsg">Sincronizado con Google Sheets</div>
+        <div id="ingredient-list"></div>
+    </div>
+</div>
+
+<script>
+    // REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT
+    const WEB_APP_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+
+    async function loadData() {
+        try {
+            const response = await fetch(WEB_APP_URL);
+            const data = await response.json();
+            renderIngredients(data);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        } catch (e) {
+            document.getElementById('loader').innerText = "Error de conexión ❌";
+        }
+    }
+
+    function renderIngredients(ingredients) {
+        const list = document.getElementById('ingredient-list');
+        list.innerHTML = "";
+        ingredients.forEach(ing => {
+            const card = document.createElement('div');
+            card.className = "card";
+            card.innerHTML = `
+                <div class="ing-header">
+                    <span class="ing-name">${ing.nombre}</span>
+                    <span style="font-size:0.6rem; color:#ccc;">ID: ${ing.id}</span>
+                </div>
+                <div class="input-grid">
+                    <div>
+                        <label>Precio Compra ($)</label>
+                        <input type="number" id="p_${ing.id}" value="${ing.precio}" step="0.01">
+                    </div>
+                    <div>
+                        <label>Peso Bruto (g)</label>
+                        <input type="number" id="w_${ing.id}" value="${ing.bruto}">
+                    </div>
+                    <div>
+                        <label>Peso Merma (g)</label>
+                        <input type="number" id="m_${ing.id}" value="${ing.merma}">
+                    </div>
+                    <div>
+                        <label>Útil (g)</label>
+                        <input type="number" id="u_${ing.id}" value="${ing.bruto - ing.merma}" readonly style="background:#f4f4f4">
+                    </div>
+                </div>
+                <div class="result-bar">
+                    <span style="font-size:0.8rem">Costo Gramo Útil:</span>
+                    <span class="cost-val" id="c_${ing.id}">$ ${ing.costoReal ? ing.costoReal.toFixed(5) : '0.00000'}</span>
+                </div>
+                <button class="save-btn" id="btn_${ing.id}" onclick="save('${ing.id}')">💾 Guardar Cambios</button>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    async function save(id) {
+        const btn = document.getElementById('btn_' + id);
+        const originalText = btn.innerText;
+        btn.innerText = "⏳ Guardando...";
+        btn.disabled = true;
+
+        const payload = {
+            id: id,
+            precio: parseFloat(document.getElementById('p_' + id).value),
+            bruto: parseFloat(document.getElementById('w_' + id).value),
+            merma: parseFloat(document.getElementById('m_' + id).value)
+        };
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            btn.style.background = "#2d5a27";
+            btn.innerText = "✅ Sincronizado";
+            setTimeout(() => {
+                btn.style.background = "#bc8a5f";
+                btn.innerText = originalText;
+                btn.disabled = false;
+                loadData(); // Recargar para ver el nuevo costo calculado
+            }, 1500);
+        } catch (e) {
+            alert("Error al guardar");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+
+    // Carga inicial
+    window.onload = loadData;
+</script>
+
+</body>
+</html>
