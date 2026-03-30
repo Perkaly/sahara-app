@@ -153,3 +153,31 @@
 
 </body>
 </html>
+// Configuración de la Receta Maestra (Gramos por 1000g de masa)
+const RECETA_MASA = [
+    { id: "002", nombre: "Harina", g: 651 },
+    { id: "004", nombre: "Sal", g: 15 },
+    { id: "005", nombre: "Levadura", g: 6 },
+    { id: "006", nombre: "Aceite", g: 48 },
+    { id: "007", nombre: "Agua", g: 280 }
+];
+
+function calcularProduccionMasa() {
+    const kilos = parseFloat(document.getElementById('q_masa_hoy').value) || 0;
+    let costoTanda = 0;
+    let resumenHtml = "";
+
+    RECETA_MASA.forEach(item => {
+        // Buscamos el costo real del ingrediente que cargamos de la DB
+        const ingData = listaIngredientesGlobal.find(i => i.id == item.id);
+        const costoG = ingData ? ingData.costoReal : 0;
+        const totalGramos = item.g * kilos;
+        const costoIngrediente = totalGramos * costoG;
+        
+        costoTanda += costoIngrediente;
+        resumenHtml += `<li>${item.nombre}: ${totalGramos.toFixed(0)}g - $${costoIngrediente.toFixed(2)}</li>`;
+    });
+
+    document.getElementById('total_masa_res').innerText = `$ ${costoTanda.toFixed(2)}`;
+    document.getElementById('detalle_masa').innerHTML = resumenHtml;
+}
