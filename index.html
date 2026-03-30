@@ -3,137 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara App - Gestión de Producción</title>
+    <title>Sahara Ops Hub</title>
     <style>
-        :root { --green: #2d5a27; --red: #d32f2f; --gold: #bc8a5f; --bg: #fdfaf5; --card: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
-        header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 52px; z-index: 99; }
-        .tab { flex: 1; text-align: center; padding: 15px; font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; text-transform: uppercase; }
+        :root { --green: #2d5a27; --gold: #bc8a5f; --bg: #fdfaf5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 20px; color: #333; }
+        header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; }
+        
+        /* Pantalla de Login */
+        #login-screen { max-width: 300px; margin: 100px auto; text-align: center; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #login-screen input { width: 80%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; text-align: center; font-size: 1.2rem; }
+        
+        /* Navegación */
+        .nav-tabs { display: none; background: white; border-bottom: 1px solid #ddd; sticky; top: 0; z-index: 100; }
+        .tab { flex: 1; text-align: center; padding: 15px; font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; }
         .tab.active { color: var(--green); border-bottom: 3px solid var(--green); background: #f0f7ef; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; display: none; }
         .page { display: none; }
         .page.active { display: block; }
-        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--gold); }
-        label { font-size: 0.7rem; color: #777; font-weight: bold; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 10px; }
-        .total-box { font-size: 1.6rem; font-weight: 800; color: var(--green); text-align: center; margin: 10px 0; }
-        .detail { font-size: 0.85rem; border-top: 1px dashed #ddd; padding-top: 10px; line-height: 1.4; }
-        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; background: var(--gold); color: white; }
-        .loader { text-align: center; margin-top: 50px; color: var(--green); }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--gold); }
+        input, select { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--green); color: white; font-weight: bold; cursor: pointer; }
+        .total-box { font-size: 1.8rem; font-weight: 800; color: var(--green); text-align: center; margin: 15px 0; }
     </style>
 </head>
 <body>
 
 <header>SAHARA PIZZERÍA</header>
-<div class="nav-tabs">
-    <div class="tab active" onclick="switchTab('bodega')">📦 Bodega</div>
-    <div class="tab" onclick="switchTab('cocina')">🧑‍🍳 Cocina</div>
+
+<div id="login-screen">
+    <h3>Token de Acceso</h3>
+    <input type="password" id="token-input" placeholder="****">
+    <button onclick="intentarLogin()">Entrar al Hub</button>
+    <p id="msg-error" style="color:red; font-size:0.8rem; display:none;">Token no válido</p>
 </div>
 
-<div class="container">
-    <div id="loader" class="loader">Cargando base de datos...</div>
+<div id="main-nav" class="nav-tabs"></div>
 
-    <div id="page-bodega" class="page active">
-        <div id="ingredient-list"></div>
+<div id="app-container" class="container">
+    <div id="page-bodega" class="page">
+        <h3>Gestión de Bodega</h3>
+        <div id="lista-insumos"></div>
     </div>
 
     <div id="page-cocina" class="page">
-        <div class="card" style="border-left-color: var(--green);">
-            <h3>Calculadora de Producción</h3>
-            <label>Selecciona qué vas a preparar:</label>
-            <select id="receta_sel" onchange="calcularTodo()">
+        <div class="card">
+            <h3>Producción Dinámica</h3>
+            <label>Receta:</label>
+            <select id="receta_sel" onchange="toggleRendimiento()">
                 <option value="MASA">Masa</option>
+                <option value="POMO">Pomodoro (Salsa)</option>
                 <option value="BOLO">Boloñesa</option>
                 <option value="POLLO">Pollo Aliñado</option>
-                <option value="POMO">Pomodoro</option>
                 <option value="PIÑA">Dulce de Piña</option>
             </select>
-            <label>¿Cuántas tandas / kilos necesitas?</label>
-            <input type="number" id="cantidad_p" value="1" oninput="calcularTodo()">
             
-            <div class="total-box" id="total_res">$ 0.00</div>
-            <div id="detalle_res" class="detail"></div>
+            <label id="lbl_base">Cantidad base (g):</label>
+            <input type="number" id="cant_base" value="1000" oninput="calcularCocina()">
+
+            <div id="div_rendimiento" style="display:none;">
+                <label style="color:var(--gold)">Peso FINAL obtenido (g):</label>
+                <input type="number" id="peso_final" placeholder="Ej: 300" oninput="calcularCocina()">
+            </div>
+
+            <div class="total-box" id="res_total">$ 0.00</div>
+            <div id="res_detalle" style="font-size: 0.85rem; line-height: 1.5;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec";
-    let globalData = [];
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec"; // <--- PEGA TU URL AQUÍ
+    let globalData = {};
+    let userActual = null;
 
-  const RECETAS = {
-    MASA: [ {id:1, n:"Harina", g:651}, {id:5, n:"Agua", g:280}, {id:4, n:"Aceite", g:48}, {id:2, n:"Sal", g:15}, {id:3, n:"Levadura", g:6} ],
-    BOLO: [ {id:6, n:"Res Molida", g:1000}, {id:7, n:"Cebolla Perla", g:1150}, {id:8, n:"Pomodoro", g:400}, {id:2, n:"Sal", g:32}, {id:9, n:"Ajo", g:15}, {id:10, n:"Orégano", g:2.9}, {id:11, n:"Albahaca", g:2.9}, {id:12, n:"Tomillo", g:0.6} ],
-    POLLO: [ {id:13, n:"Pollo Fresco", g:1000}, {id:5, n:"Agua", g:285}, {id:4, n:"Aceite", g:18}, {id:2, n:"Sal", g:15}, {id:9, n:"Ajo", g:14}, {id:10, n:"Orégano", g:3}, {id:11, n:"Albahaca", g:2.3}, {id:14, n:"Vinagre", g:0.1} ],
-    POMO: [ {id:15, n:"Tomate Red.", g:1000}, {id:2, n:"Sal", g:8.5}, {id:16, n:"Azúcar", g:8.5}, {id:10, n:"Orégano", g:4}, {id:11, n:"Albahaca", g:2.3}, {id:12, n:"Tomillo", g:1.1} ],
-    PIÑA: [ {id:17, n:"Piña Fresca", g:1000}, {id:16, n:"Azúcar", g:172} ]
-};
+    const RECETAS = {
+        MASA: [ {id:1, n:"Harina", g:651}, {id:5, n:"Agua", g:280}, {id:4, n:"Aceite", g:48}, {id:2, n:"Sal", g:15}, {id:3, n:"Levadura", g:6} ],
+        POMO: [ {id:14, n:"Tomate Fresco", g:1000}, {id:2, n:"Sal", g:8.5}, {id:15, n:"Azúcar", g:8.5}, {id:9, n:"Orégano", g:4}, {id:10, n:"Albahaca", g:2.3}, {id:11, n:"Tomillo", g:1.1} ],
+        BOLO: [ {id:6, n:"Res Molida", g:1000}, {id:7, n:"Cebolla Perla", g:1150}, {id:8, n:"Ajo", g:15}, {id:2, n:"Sal", g:32}, {id:9, n:"Orégano", g:2.9}, {id:10, n:"Albahaca", g:2.9}, {id:11, n:"Tomillo", g:0.6} ],
+        POLLO: [ {id:12, n:"Pollo Fresco", g:1000}, {id:5, n:"Agua", g:285}, {id:4, n:"Aceite", g:18}, {id:2, n:"Sal", g:15}, {id:8, n:"Ajo", g:14}, {id:9, n:"Orégano", g:3}, {id:10, n:"Albahaca", g:2.3}, {id:13, n:"Vinagre", g:0.1} ],
+        PIÑA: [ {id:16, n:"Piña Fresca", g:1000}, {id:15, n:"Azúcar", g:172} ]
+    };
 
     async function fetchData() {
-        try {
-            const res = await fetch(WEB_APP_URL);
-            globalData = await res.json();
-            renderBodega();
-            calcularTodo();
-            document.getElementById('loader').style.display = 'none';
-        } catch (e) { document.getElementById('loader').innerText = "Error de conexión ❌"; }
+        const r = await fetch(WEB_APP_URL);
+        globalData = await r.json();
     }
 
-    function renderBodega() {
-        const list = document.getElementById('ingredient-list');
-        list.innerHTML = "";
-        globalData.forEach(ing => {
-            const card = document.createElement('div');
-            card.className = "card";
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between"><b>${ing.nombre}</b> <small>ID: ${ing.id}</small></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-                    <div><label>Precio Compra</label><input type="number" id="p_${ing.id}" value="${ing.precio}"></div>
-                    <div><label>Peso Bruto (g)</label><input type="number" id="w_${ing.id}" value="${ing.bruto}"></div>
-                    <div><label>Peso Merma (g)</label><input type="number" id="m_${ing.id}" value="${ing.merma}"></div>
-                    <div><label>Costo G. Real</label><div style="padding:10px; background:#f4f4f4; border-radius:8px; font-weight:bold">$ ${ing.costoReal.toFixed(5)}</div></div>
-                </div>
-                <button onclick="saveIng('${ing.id}')">Actualizar Insumo</button>
-            `;
-            list.appendChild(card);
-        });
+    function intentarLogin() {
+        const pin = document.getElementById('token-input').value;
+        const user = globalData.usuarios.find(u => u.token === pin);
+        if(user) {
+            userActual = user;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            renderTabs(user);
+        } else {
+            document.getElementById('msg-error').style.display = 'block';
+        }
     }
 
-    function calcularTodo() {
+    function renderTabs(u) {
+        const nav = document.getElementById('main-nav');
+        nav.style.display = 'flex';
+        if(u.bodega === "SI") nav.innerHTML += `<div class="tab" onclick="switchTab('bodega')">📦 Bodega</div>`;
+        if(u.cocina === "SI") nav.innerHTML += `<div class="tab" onclick="switchTab('cocina')">🧑‍🍳 Cocina</div>`;
+        nav.querySelector('.tab').click();
+        if(u.bodega === "SI") renderBodega();
+    }
+
+    function toggleRendimiento() {
+        const r = document.getElementById('receta_sel').value;
+        document.getElementById('div_rendimiento').style.display = (r === 'POMO') ? 'block' : 'none';
+        calcularCocina();
+    }
+
+    function calcularCocina() {
         const tipo = document.getElementById('receta_sel').value;
-        const cant = parseFloat(document.getElementById('cantidad_p').value) || 0;
+        const base = parseFloat(document.getElementById('cant_base').value) || 0;
+        const pFinal = parseFloat(document.getElementById('peso_final').value) || 1;
         let total = 0;
-        let html = "<b>Ingredientes necesarios:</b><br>";
+        let html = "";
 
-        RECETAS[tipo].forEach(item => {
-            const ing = globalData.find(i => i.id == item.id);
+        RECETAS[tipo].forEach(i => {
+            const ing = globalData.ingredientes.find(g => g.id == i.id);
             const costoG = ing ? ing.costoReal : 0;
-            const subtotal = (item.g * cant) * costoG;
-            total += subtotal;
-            html += `• ${item.n}: ${(item.g * cant).toLocaleString()}g → $${subtotal.toFixed(2)}<br>`;
+            const sub = (i.g * (base/1000)) * costoG;
+            total += sub;
+            html += `• ${i.n}: ${(i.g * (base/1000)).toFixed(0)}g → $${sub.toFixed(2)}<br>`;
         });
 
-        document.getElementById('total_res').innerText = `$ ${total.toFixed(2)}`;
-        document.getElementById('detalle_res').innerHTML = html;
+        document.getElementById('res_total').innerText = `$ ${total.toFixed(2)}`;
+        if(tipo === 'POMO' && pFinal > 1) {
+            const cG = total / pFinal;
+            html += `<br><b style="color:var(--gold)">Costo por gramo reducido: $${cG.toFixed(4)}</b>`;
+        }
+        document.getElementById('res_detalle').innerHTML = html;
     }
 
-    async function saveIng(id) {
-        const payload = {
-            id: id,
-            precio: parseFloat(document.getElementById('p_'+id).value),
-            bruto: parseFloat(document.getElementById('w_'+id).value),
-            merma: parseFloat(document.getElementById('m_'+id).value)
-        };
-        await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-        alert("Actualizado en la nube ✅");
-        fetchData();
-    }
-
-    function switchTab(t) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(tb => tb.classList.remove('active'));
-        document.getElementById('page-'+t).classList.add('active');
+    function switchTab(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('page-'+p).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
