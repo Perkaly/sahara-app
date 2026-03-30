@@ -62,13 +62,13 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec";
     let globalData = [];
 
-    const RECETAS = {
-        MASA: [ {id:2, n:"Harina", g:651}, {id:7, n:"Agua", g:280}, {id:6, n:"Aceite", g:48}, {id:4, n:"Sal", g:15}, {id:5, n:"Levadura", g:6} ],
-        BOLO: [ {id:8, n:"Res Molida", g:1000}, {id:9, n:"Cebolla Perla", g:1150}, {id:10, n:"Pomodoro", g:400}, {id:4, n:"Sal", g:32}, {id:11, n:"Ajo", g:15}, {id:12, n:"Orégano", g:2.9}, {id:13, n:"Albahaca", g:2.9}, {id:14, n:"Tomillo", g:0.6} ],
-        POLLO: [ {id:15, n:"Pollo Fresco", g:1000}, {id:7, n:"Agua", g:285}, {id:6, n:"Aceite", g:18}, {id:4, n:"Sal", g:15}, {id:11, n:"Ajo", g:14}, {id:12, n:"Orégano", g:3}, {id:13, n:"Albahaca", g:2.3}, {id:16, n:"Vinagre", g:0.1} ],
-        POMO: [ {id:17, n:"Tomate Red.", g:1000}, {id:4, n:"Sal", g:8.5}, {id:18, n:"Azúcar", g:8.5}, {id:12, n:"Orégano", g:4}, {id:13, n:"Albahaca", g:2.3}, {id:14, n:"Tomillo", g:1.1} ],
-        PIÑA: [ {id:19, n:"Piña Fresca", g:1000}, {id:18, n:"Azúcar", g:172} ]
-    };
+  const RECETAS = {
+    MASA: [ {id:1, n:"Harina", g:651}, {id:5, n:"Agua", g:280}, {id:4, n:"Aceite", g:48}, {id:2, n:"Sal", g:15}, {id:3, n:"Levadura", g:6} ],
+    BOLO: [ {id:6, n:"Res Molida", g:1000}, {id:7, n:"Cebolla Perla", g:1150}, {id:8, n:"Pomodoro", g:400}, {id:2, n:"Sal", g:32}, {id:9, n:"Ajo", g:15}, {id:10, n:"Orégano", g:2.9}, {id:11, n:"Albahaca", g:2.9}, {id:12, n:"Tomillo", g:0.6} ],
+    POLLO: [ {id:13, n:"Pollo Fresco", g:1000}, {id:5, n:"Agua", g:285}, {id:4, n:"Aceite", g:18}, {id:2, n:"Sal", g:15}, {id:9, n:"Ajo", g:14}, {id:10, n:"Orégano", g:3}, {id:11, n:"Albahaca", g:2.3}, {id:14, n:"Vinagre", g:0.1} ],
+    POMO: [ {id:15, n:"Tomate Red.", g:1000}, {id:2, n:"Sal", g:8.5}, {id:16, n:"Azúcar", g:8.5}, {id:10, n:"Orégano", g:4}, {id:11, n:"Albahaca", g:2.3}, {id:12, n:"Tomillo", g:1.1} ],
+    PIÑA: [ {id:17, n:"Piña Fresca", g:1000}, {id:16, n:"Azúcar", g:172} ]
+};
 
     async function fetchData() {
         try {
