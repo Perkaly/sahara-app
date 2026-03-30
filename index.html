@@ -3,64 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara App - Gestión Total</title>
+    <title>Sahara App - Gestión de Producción</title>
     <style>
-        :root { --green: #2d5a27; --gold: #bc8a5f; --bg: #fdfaf5; --card: #ffffff; }
+        :root { --green: #2d5a27; --red: #d32f2f; --gold: #bc8a5f; --bg: #fdfaf5; --card: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
-        
-        /* Navegación Pestañas */
-        header { background: var(--green); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 58px; z-index: 99; }
-        .tab { flex: 1; text-align: center; padding: 12px; font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; text-transform: uppercase; }
+        header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .nav-tabs { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 52px; z-index: 99; }
+        .tab { flex: 1; text-align: center; padding: 15px; font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; text-transform: uppercase; }
         .tab.active { color: var(--green); border-bottom: 3px solid var(--green); background: #f0f7ef; }
-
-        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
         .page { display: none; }
         .page.active { display: block; }
-        
-        /* Tarjetas */
-        .card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
-        .card-h { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--gold); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        label { font-size: 0.65rem; color: #999; font-weight: bold; }
+        label { font-size: 0.7rem; color: #777; font-weight: bold; display: block; margin-bottom: 4px; }
         input { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        
-        .res-pill { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .total-masa { font-size: 1.8rem; font-weight: 800; color: var(--green); text-align: center; margin: 15px 0; }
-        
-        button { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-save { background: var(--gold); color: white; margin-top: 10px; }
-        .btn-calc { background: var(--green); color: white; }
-
-        .loader { text-align: center; margin-top: 50px; font-weight: bold; color: var(--green); }
+        .total-box { font-size: 1.6rem; font-weight: 800; color: var(--green); text-align: center; margin: 10px 0; }
+        .detail { font-size: 0.85rem; border-top: 1px dashed #ddd; padding-top: 10px; line-height: 1.4; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-save { background: var(--gold); color: white; }
+        .loader { text-align: center; margin-top: 50px; color: var(--green); }
     </style>
 </head>
 <body>
 
 <header>SAHARA PIZZERÍA</header>
-
 <div class="nav-tabs">
     <div class="tab active" onclick="switchTab('bodega')">📦 Bodega</div>
     <div class="tab" onclick="switchTab('cocina')">🧑‍🍳 Cocina</div>
 </div>
 
 <div class="container">
-    <div id="loader" class="loader">Conectando con Sahara_DB...</div>
+    <div id="loader" class="loader">Cargando base de datos...</div>
 
     <div id="page-bodega" class="page active">
         <div id="ingredient-list"></div>
     </div>
 
     <div id="page-cocina" class="page">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--green);">Producción de Masa</h3>
-            <label>Kilos de masa terminada (ej: 1 o 5.5):</label>
-            <input type="number" id="q_masa_hoy" placeholder="0" oninput="calcMasa()">
+        <div class="card" style="border-left-color: var(--green);">
+            <h3>Calculadora de Producción</h3>
+            <label>Selecciona qué vas a preparar:</label>
+            <select id="receta_sel" onchange="calcularTodo()" style="width:100%; padding:10px; border-radius:8px; margin-bottom:10px;">
+                <option value="MASA">Masa (1000g)</option>
+                <option value="BOLO">Boloñesa (Tanda ~2.6kg)</option>
+                <option value="POLLO">Pollo Aliñado (Tanda ~1.3kg)</option>
+                <option value="POMO">Pomodoro (Tanda ~1kg)</option>
+                <option value="PIÑA">Dulce de Piña (Tanda ~1.1kg)</option>
+            </select>
+            <label>¿Cuántas tandas / kilos necesitas?</label>
+            <input type="number" id="cantidad_p" value="1" oninput="calcularTodo()">
             
-            <div class="total-masa" id="total_masa_res">$ 0.00</div>
-            
-            <div id="detalle_masa" style="font-size: 0.85rem; border-top: 1px dashed #ccc; padding-top: 10px;">
-                </div>
+            <div class="total-box" id="total_res">$ 0.00</div>
+            <div id="detalle_res" class="detail"></div>
         </div>
     </div>
 </div>
@@ -69,22 +64,22 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec"; // REEMPLAZA ESTO
     let globalData = [];
 
-    // Receta Maestra Sahara (Gramos para 1000g de masa terminada)
-    const RECETA = [
-        { id: 2, nombre: "Harina", g: 651 },
-        { id: 4, nombre: "Sal", g: 15 },
-        { id: 5, nombre: "Levadura", g: 6 },
-        { id: 6, nombre: "Aceite", g: 48 },
-        { id: 7, nombre: "Agua", g: 280 }
-    ];
+    const RECETAS = {
+        MASA: [ {id:2, n:"Harina", g:651}, {id:7, n:"Agua", g:280}, {id:6, n:"Aceite", g:48}, {id:4, n:"Sal", g:15}, {id:5, n:"Levadura", g:6} ],
+        BOLO: [ {id:8, n:"Res Molida", g:1000}, {id:9, n:"Cebolla Perla", g:1150}, {id:17, n:"Pomodoro", g:400}, {id:4, n:"Sal", g:32}, {id:11, n:"Ajo", g:15}, {id:12, n:"Orégano", g:2.9}, {id:13, n:"Albahaca", g:2.9}, {id:14, n:"Tomillo", g:0.6} ],
+        POLLO: [ {id:15, n:"Pollo Fresco", g:1000}, {id:7, n:"Agua", g:285}, {id:6, n:"Aceite", g:18}, {id:4, n:"Sal", g:15}, {id:11, n:"Ajo", g:14}, {id:12, n:"Orégano", g:3}, {id:13, n:"Albahaca", g:2.3}, {id:16, n:"Vinagre", g:0.5} ],
+        POMO: [ {id:17, n:"Tomate Red.", g:1000}, {id:4, n:"Sal", g:8.5}, {id:18, n:"Azúcar", g:8.5}, {id:12, n:"Orégano", g:4}, {id:13, n:"Albahaca", g:2.3}, {id:14, n:"Tomillo", g:1.1} ],
+        PIÑA: [ {id:19, n:"Piña Fresca", g:1000}, {id:18, n:"Azúcar", g:172} ]
+    };
 
     async function fetchData() {
         try {
             const res = await fetch(WEB_APP_URL);
             globalData = await res.json();
             renderBodega();
+            calcularTodo();
             document.getElementById('loader').style.display = 'none';
-        } catch (e) { document.getElementById('loader').innerText = "Error ❌ Revisa la URL"; }
+        } catch (e) { document.getElementById('loader').innerText = "Error de conexión ❌"; }
     }
 
     function renderBodega() {
@@ -94,35 +89,35 @@
             const card = document.createElement('div');
             card.className = "card";
             card.innerHTML = `
-                <div class="card-h"><b>${ing.nombre}</b> <small>ID: ${ing.id}</small></div>
-                <div class="grid">
-                    <div><label>Precio $</label><input type="number" id="p_${ing.id}" value="${ing.precio}"></div>
-                    <div><label>Bruto (g)</label><input type="number" id="w_${ing.id}" value="${ing.bruto}"></div>
-                    <div><label>Merma (g)</label><input type="number" id="m_${ing.id}" value="${ing.merma}"></div>
-                    <div><label>Útil (g)</label><input value="${ing.bruto - ing.merma}" readonly style="background:#f4f4f4"></div>
+                <div style="display:flex; justify-content:space-between"><b>${ing.nombre}</b> <small>ID: ${ing.id}</small></div>
+                <div class="grid" style="margin-top:10px">
+                    <div><label>Precio Compra</label><input type="number" id="p_${ing.id}" value="${ing.precio}"></div>
+                    <div><label>Peso Bruto (g)</label><input type="number" id="w_${ing.id}" value="${ing.bruto}"></div>
+                    <div><label>Peso Merma (g)</label><input type="number" id="m_${ing.id}" value="${ing.merma}"></div>
+                    <div><label>Costo G. Real</label><div style="padding:10px; background:#f4f4f4; border-radius:8px; font-weight:bold">$ ${ing.costoReal.toFixed(5)}</div></div>
                 </div>
-                <div class="res-pill"><span>Costo gramo real:</span> <b>$ ${ing.costoReal.toFixed(5)}</b></div>
-                <button class="btn-save" onclick="saveIng('${ing.id}')">Guardar</button>
+                <button class="btn-save" onclick="saveIng('${ing.id}')">Actualizar Insumo</button>
             `;
             list.appendChild(card);
         });
     }
 
-    function calcMasa() {
-        const kilos = parseFloat(document.getElementById('q_masa_hoy').value) || 0;
+    function calcularTodo() {
+        const tipo = document.getElementById('receta_sel').value;
+        const cant = parseFloat(document.getElementById('cantidad_p').value) || 0;
         let total = 0;
-        let html = "<b>Desglose de insumos:</b><br>";
+        let html = "<b>Ingredientes necesarios:</b><br>";
 
-        RECETA.forEach(item => {
+        RECETAS[tipo].forEach(item => {
             const ing = globalData.find(i => i.id == item.id);
             const costoG = ing ? ing.costoReal : 0;
-            const subtotal = (item.g * kilos) * costoG;
+            const subtotal = (item.g * cant) * costoG;
             total += subtotal;
-            html += `• ${item.nombre}: ${(item.g * kilos).toFixed(0)}g → $${subtotal.toFixed(2)}<br>`;
+            html += `• ${item.n}: ${(item.g * cant).toLocaleString()}g → $${subtotal.toFixed(2)}<br>`;
         });
 
-        document.getElementById('total_masa_res').innerText = `$ ${total.toFixed(2)}`;
-        document.getElementById('detalle_masa').innerHTML = html;
+        document.getElementById('total_res').innerText = `$ ${total.toFixed(2)}`;
+        document.getElementById('detalle_res').innerHTML = html;
     }
 
     async function saveIng(id) {
@@ -132,17 +127,16 @@
             bruto: parseFloat(document.getElementById('w_'+id).value),
             merma: parseFloat(document.getElementById('m_'+id).value)
         };
-        await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) });
-        alert("Actualizado ✅");
+        await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+        alert("Insumo actualizado en la nube ✅");
         fetchData();
     }
 
-    function switchTab(target) {
+    function switchTab(t) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('page-' + target).classList.add('active');
+        document.querySelectorAll('.tab').forEach(tb => tb.classList.remove('active'));
+        document.getElementById('page-'+t).classList.add('active');
         event.currentTarget.classList.add('active');
-        if(target === 'cocina') calcMasa();
     }
 
     window.onload = fetchData;
