@@ -7,24 +7,29 @@
     <style>
         :root { --green: #2d5a27; --gold: #bc8a5f; --bg: #fdfaf5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 20px; color: #333; }
-        header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; }
+        header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; letter-spacing: 1px; }
         
         /* Pantalla de Login */
-        #login-screen { max-width: 300px; margin: 100px auto; text-align: center; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        #login-screen input { width: 80%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; text-align: center; font-size: 1.2rem; }
+        #login-screen { max-width: 300px; margin: 80px auto; text-align: center; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #login-screen input { width: 80%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; text-align: center; font-size: 1.2rem; }
         
         /* Navegación */
-        .nav-tabs { display: none; background: white; border-bottom: 1px solid #ddd; sticky; top: 0; z-index: 100; }
-        .tab { flex: 1; text-align: center; padding: 15px; font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; }
+        .nav-tabs { display: none; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; justify-content: space-around; }
+        .tab { flex: 1; text-align: center; padding: 15px; font-size: 0.85rem; font-weight: bold; color: #888; cursor: pointer; transition: 0.3s; }
         .tab.active { color: var(--green); border-bottom: 3px solid var(--green); background: #f0f7ef; }
 
         .container { padding: 15px; max-width: 600px; margin: auto; display: none; }
         .page { display: none; }
         .page.active { display: block; }
+        
+        /* Tarjetas Estilo Solarpunk */
         .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--gold); }
-        input, select { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
-        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--green); color: white; font-weight: bold; cursor: pointer; }
-        .total-box { font-size: 1.8rem; font-weight: 800; color: var(--green); text-align: center; margin: 15px 0; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-size: 1rem; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--green); color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        button:active { transform: scale(0.98); }
+        
+        .total-box { font-size: 2rem; font-weight: 800; color: var(--green); text-align: center; margin: 15px 0; border-top: 1px dashed #eee; padding-top: 10px; }
+        .detail { font-size: 0.9rem; color: #555; line-height: 1.6; background: #f9f9f9; padding: 10px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -32,51 +37,57 @@
 <header>SAHARA PIZZERÍA</header>
 
 <div id="login-screen">
-    <h3>Token de Acceso</h3>
-    <input type="password" id="token-input" placeholder="****">
-    <button onclick="intentarLogin()">Entrar al Hub</button>
-    <p id="msg-error" style="color:red; font-size:0.8rem; display:none;">Token no válido</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/1047/1047503.png" width="60" style="margin-bottom:10px;">
+    <h3>Acceso al Sistema</h3>
+    <input type="password" id="token-input" placeholder="Ingresa tu PIN">
+    <button onclick="intentarLogin()">Entrar</button>
+    <p id="msg-error" style="color:red; font-size:0.8rem; display:none; margin-top:10px;">PIN incorrecto o sin permisos</p>
 </div>
 
 <div id="main-nav" class="nav-tabs"></div>
 
 <div id="app-container" class="container">
     <div id="page-bodega" class="page">
-        <h3>Gestión de Bodega</h3>
+        <h3 style="color: var(--green);">📦 Inventario de Insumos</h3>
+        <p style="font-size:0.8rem; color:gray;">Costos actuales basados en última compra</p>
         <div id="lista-insumos"></div>
     </div>
 
     <div id="page-cocina" class="page">
         <div class="card">
-            <h3>Producción Dinámica</h3>
-            <label>Receta:</label>
+            <h3 style="color: var(--green); margin-top:0;">🧑‍🍳 Calculadora de Cocina</h3>
+            <label>Selecciona producción:</label>
             <select id="receta_sel" onchange="toggleRendimiento()">
                 <option value="MASA">Masa</option>
-                <option value="POMO">Pomodoro (Salsa)</option>
+                <option value="POMO">Pomodoro</option>
                 <option value="BOLO">Boloñesa</option>
                 <option value="POLLO">Pollo Aliñado</option>
                 <option value="PIÑA">Dulce de Piña</option>
             </select>
             
-            <label id="lbl_base">Cantidad base (g):</label>
+            <label id="lbl_base">Cantidad a preparar (g/kg):</label>
             <input type="number" id="cant_base" value="1000" oninput="calcularCocina()">
 
-            <div id="div_rendimiento" style="display:none;">
-                <label style="color:var(--gold)">Peso FINAL obtenido (g):</label>
+            <div id="div_rendimiento" style="display:none; margin-top:10px; padding:10px; background:#fff3e0; border-radius:8px;">
+                <label style="color:#e65100; font-weight:bold;">Peso FINAL obtenido (g):</label>
                 <input type="number" id="peso_final" placeholder="Ej: 300" oninput="calcularCocina()">
+                <small>Úsalo para saber el costo real tras la reducción.</small>
             </div>
 
             <div class="total-box" id="res_total">$ 0.00</div>
-            <div id="res_detalle" style="font-size: 0.85rem; line-height: 1.5;"></div>
+            <div id="res_detalle" class="detail"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec"; // <--- PEGA TU URL AQUÍ
+    // URL de tu Google Apps Script (Sustitúyela por la nueva que generes)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec"; 
+    
     let globalData = {};
     let userActual = null;
 
+    // Configuración de Recetas con IDs del 1 al 23
     const RECETAS = {
         MASA: [ {id:1, n:"Harina", g:651}, {id:5, n:"Agua", g:280}, {id:4, n:"Aceite", g:48}, {id:2, n:"Sal", g:15}, {id:3, n:"Levadura", g:6} ],
         POMO: [ {id:14, n:"Tomate Fresco", g:1000}, {id:2, n:"Sal", g:8.5}, {id:15, n:"Azúcar", g:8.5}, {id:9, n:"Orégano", g:4}, {id:10, n:"Albahaca", g:2.3}, {id:11, n:"Tomillo", g:1.1} ],
@@ -85,14 +96,22 @@
         PIÑA: [ {id:16, n:"Piña Fresca", g:1000}, {id:15, n:"Azúcar", g:172} ]
     };
 
+    // 1. Cargar datos desde Google Sheets al iniciar
     async function fetchData() {
-        const r = await fetch(WEB_APP_URL);
-        globalData = await r.json();
+        try {
+            const r = await fetch(WEB_APP_URL);
+            globalData = await r.json();
+            console.log("Datos cargados correctamente");
+        } catch (e) {
+            console.error("Error cargando base de datos", e);
+        }
     }
 
+    // 2. Sistema de Seguridad por Token
     function intentarLogin() {
         const pin = document.getElementById('token-input').value;
         const user = globalData.usuarios.find(u => u.token === pin);
+        
         if(user) {
             userActual = user;
             document.getElementById('login-screen').style.display = 'none';
@@ -103,15 +122,48 @@
         }
     }
 
+    // 3. Renderizar Menú de Navegación según Permisos
     function renderTabs(u) {
         const nav = document.getElementById('main-nav');
+        nav.innerHTML = ""; // Limpiar
         nav.style.display = 'flex';
-        if(u.bodega === "SI") nav.innerHTML += `<div class="tab" onclick="switchTab('bodega')">📦 Bodega</div>`;
-        if(u.cocina === "SI") nav.innerHTML += `<div class="tab" onclick="switchTab('cocina')">🧑‍🍳 Cocina</div>`;
-        nav.querySelector('.tab').click();
-        if(u.bodega === "SI") renderBodega();
+        
+        if(u.bodega === "SI") nav.innerHTML += `<div class="tab" id="tab-bodega" onclick="switchTab('bodega')">📦 Bodega</div>`;
+        if(u.cocina === "SI") nav.innerHTML += `<div class="tab" id="tab-cocina" onclick="switchTab('cocina')">🧑‍🍳 Cocina</div>`;
+        
+        // Activar la primera pestaña que aparezca
+        const primera = nav.querySelector('.tab');
+        if(primera) primera.click();
     }
 
+    function switchTab(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('page-'+p).classList.add('active');
+        document.getElementById('tab-'+p).classList.add('active');
+        if(p === 'bodega') renderBodega();
+    }
+
+    // 4. Lógica de Bodega (Corregida)
+    function renderBodega() {
+        const lista = document.getElementById('lista-insumos');
+        lista.innerHTML = ""; 
+        globalData.ingredientes.forEach(ing => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><strong>${ing.nombre}</strong><br><small>ID: ${ing.id}</small></div>
+                    <div style="text-align:right;">
+                        <span style="color:var(--green); font-weight:bold;">$${ing.costoReal.toFixed(4)} /g</span><br>
+                        <small>Ref: $${ing.precio}</small>
+                    </div>
+                </div>`;
+            lista.appendChild(card);
+        });
+    }
+
+    // 5. Lógica de Cocina y Rendimientos
     function toggleRendimiento() {
         const r = document.getElementById('receta_sel').value;
         document.getElementById('div_rendimiento').style.display = (r === 'POMO') ? 'block' : 'none';
@@ -121,31 +173,26 @@
     function calcularCocina() {
         const tipo = document.getElementById('receta_sel').value;
         const base = parseFloat(document.getElementById('cant_base').value) || 0;
-        const pFinal = parseFloat(document.getElementById('peso_final').value) || 1;
+        const pFinal = parseFloat(document.getElementById('peso_final').value) || 0;
         let total = 0;
-        let html = "";
+        let html = "<b>Desglose:</b><br>";
 
         RECETAS[tipo].forEach(i => {
             const ing = globalData.ingredientes.find(g => g.id == i.id);
             const costoG = ing ? ing.costoReal : 0;
-            const sub = (i.g * (base/1000)) * costoG;
-            total += sub;
-            html += `• ${i.n}: ${(i.g * (base/1000)).toFixed(0)}g → $${sub.toFixed(2)}<br>`;
+            const cantidadNecesaria = i.g * (base/1000);
+            const subtotal = cantidadNecesaria * costoG;
+            total += subtotal;
+            html += `• ${i.n}: ${cantidadNecesaria.toFixed(1)}g → $${subtotal.toFixed(2)}<br>`;
         });
 
         document.getElementById('res_total').innerText = `$ ${total.toFixed(2)}`;
-        if(tipo === 'POMO' && pFinal > 1) {
-            const cG = total / pFinal;
-            html += `<br><b style="color:var(--gold)">Costo por gramo reducido: $${cG.toFixed(4)}</b>`;
+        
+        if(tipo === 'POMO' && pFinal > 0) {
+            const costoGramoReducido = total / pFinal;
+            html += `<br><span style="color:var(--gold)"><b>Costo gramo reducido: $${costoGramoReducido.toFixed(4)}</b></span>`;
         }
         document.getElementById('res_detalle').innerHTML = html;
-    }
-
-    function switchTab(p) {
-        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('page-'+p).classList.add('active');
-        event.currentTarget.classList.add('active');
     }
 
     window.onload = fetchData;
