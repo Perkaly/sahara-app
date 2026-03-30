@@ -15,13 +15,11 @@
         .page { display: none; }
         .page.active { display: block; }
         .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid var(--gold); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         label { font-size: 0.7rem; color: #777; font-weight: bold; display: block; margin-bottom: 4px; }
-        input { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 10px; }
         .total-box { font-size: 1.6rem; font-weight: 800; color: var(--green); text-align: center; margin: 10px 0; }
         .detail { font-size: 0.85rem; border-top: 1px dashed #ddd; padding-top: 10px; line-height: 1.4; }
-        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-save { background: var(--gold); color: white; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; background: var(--gold); color: white; }
         .loader { text-align: center; margin-top: 50px; color: var(--green); }
     </style>
 </head>
@@ -44,12 +42,12 @@
         <div class="card" style="border-left-color: var(--green);">
             <h3>Calculadora de Producción</h3>
             <label>Selecciona qué vas a preparar:</label>
-            <select id="receta_sel" onchange="calcularTodo()" style="width:100%; padding:10px; border-radius:8px; margin-bottom:10px;">
-                <option value="MASA">Masa (1000g)</option>
-                <option value="BOLO">Boloñesa (Tanda ~2.6kg)</option>
-                <option value="POLLO">Pollo Aliñado (Tanda ~1.3kg)</option>
-                <option value="POMO">Pomodoro (Tanda ~1kg)</option>
-                <option value="PIÑA">Dulce de Piña (Tanda ~1.1kg)</option>
+            <select id="receta_sel" onchange="calcularTodo()">
+                <option value="MASA">Masa (Receta 1kg)</option>
+                <option value="BOLO">Boloñesa (Receta 2.6kg)</option>
+                <option value="POLLO">Pollo Aliñado (Receta 1.3kg)</option>
+                <option value="POMO">Pomodoro (Receta 1kg)</option>
+                <option value="PIÑA">Dulce de Piña (Receta 1.1kg)</option>
             </select>
             <label>¿Cuántas tandas / kilos necesitas?</label>
             <input type="number" id="cantidad_p" value="1" oninput="calcularTodo()">
@@ -61,13 +59,13 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec"; // REEMPLAZA ESTO
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEOkvGH_80bLR2Frsug8qBR-LLK34atkBnaBe5X3xL-9LB-YJQdsFG0LmDyQ8-uItp/exec";
     let globalData = [];
 
     const RECETAS = {
         MASA: [ {id:2, n:"Harina", g:651}, {id:7, n:"Agua", g:280}, {id:6, n:"Aceite", g:48}, {id:4, n:"Sal", g:15}, {id:5, n:"Levadura", g:6} ],
-        BOLO: [ {id:8, n:"Res Molida", g:1000}, {id:9, n:"Cebolla Perla", g:1150}, {id:17, n:"Pomodoro", g:400}, {id:4, n:"Sal", g:32}, {id:11, n:"Ajo", g:15}, {id:12, n:"Orégano", g:2.9}, {id:13, n:"Albahaca", g:2.9}, {id:14, n:"Tomillo", g:0.6} ],
-        POLLO: [ {id:15, n:"Pollo Fresco", g:1000}, {id:7, n:"Agua", g:285}, {id:6, n:"Aceite", g:18}, {id:4, n:"Sal", g:15}, {id:11, n:"Ajo", g:14}, {id:12, n:"Orégano", g:3}, {id:13, n:"Albahaca", g:2.3}, {id:16, n:"Vinagre", g:0.5} ],
+        BOLO: [ {id:8, n:"Res Molida", g:1000}, {id:9, n:"Cebolla Perla", g:1150}, {id:10, n:"Pomodoro", g:400}, {id:4, n:"Sal", g:32}, {id:11, n:"Ajo", g:15}, {id:12, n:"Orégano", g:2.9}, {id:13, n:"Albahaca", g:2.9}, {id:14, n:"Tomillo", g:0.6} ],
+        POLLO: [ {id:15, n:"Pollo Fresco", g:1000}, {id:7, n:"Agua", g:285}, {id:6, n:"Aceite", g:18}, {id:4, n:"Sal", g:15}, {id:11, n:"Ajo", g:14}, {id:12, n:"Orégano", g:3}, {id:13, n:"Albahaca", g:2.3}, {id:16, n:"Vinagre", g:0.1} ],
         POMO: [ {id:17, n:"Tomate Red.", g:1000}, {id:4, n:"Sal", g:8.5}, {id:18, n:"Azúcar", g:8.5}, {id:12, n:"Orégano", g:4}, {id:13, n:"Albahaca", g:2.3}, {id:14, n:"Tomillo", g:1.1} ],
         PIÑA: [ {id:19, n:"Piña Fresca", g:1000}, {id:18, n:"Azúcar", g:172} ]
     };
@@ -90,13 +88,13 @@
             card.className = "card";
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between"><b>${ing.nombre}</b> <small>ID: ${ing.id}</small></div>
-                <div class="grid" style="margin-top:10px">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
                     <div><label>Precio Compra</label><input type="number" id="p_${ing.id}" value="${ing.precio}"></div>
                     <div><label>Peso Bruto (g)</label><input type="number" id="w_${ing.id}" value="${ing.bruto}"></div>
                     <div><label>Peso Merma (g)</label><input type="number" id="m_${ing.id}" value="${ing.merma}"></div>
                     <div><label>Costo G. Real</label><div style="padding:10px; background:#f4f4f4; border-radius:8px; font-weight:bold">$ ${ing.costoReal.toFixed(5)}</div></div>
                 </div>
-                <button class="btn-save" onclick="saveIng('${ing.id}')">Actualizar Insumo</button>
+                <button onclick="saveIng('${ing.id}')">Actualizar Insumo</button>
             `;
             list.appendChild(card);
         });
@@ -128,7 +126,7 @@
             merma: parseFloat(document.getElementById('m_'+id).value)
         };
         await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-        alert("Insumo actualizado en la nube ✅");
+        alert("Actualizado en la nube ✅");
         fetchData();
     }
 
