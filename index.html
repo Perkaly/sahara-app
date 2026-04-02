@@ -3,78 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara | Sistema Integral v4.0</title>
+    <title>Sahara | SPA v4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --oro: #D4AF37;
-            --verde-sahara: #0A1F1A; /* Verde más oscuro y elegante */
+            --verde-sahara: #0A1F1A;
             --gris-fondo: #16322C;
             --blanco: #FFFFFF;
             --rojo: #922B21;
             --verde-exito: #1E8449;
         }
-
-        body { font-family: 'Open Sans', sans-serif; background: var(--verde-sahara); color: var(--blanco); margin: 0; overflow-x: hidden; }
+        body { font-family: 'Open Sans', sans-serif; background: var(--verde-sahara); color: var(--blanco); margin: 0; }
         header { background: #050F0D; padding: 15px; text-align: center; border-bottom: 2px solid var(--oro); position: sticky; top: 0; z-index: 100; }
         h1 { font-family: 'Montserrat', sans-serif; color: var(--oro); margin: 0; letter-spacing: 2px; font-size: 22px; }
-
-        #app { padding: 15px; max-width: 600px; margin: auto; min-height: 80vh; }
-        .card { background: var(--gris-fondo); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #244b42; }
-        
+        #app { padding: 15px; max-width: 600px; margin: auto; min-height: 85vh; padding-bottom: 100px; }
+        .card { background: var(--gris-fondo); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #244b42; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn { background: var(--oro); color: #050F0D; border: none; padding: 12px; border-radius: 8px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 5px; }
         .btn-rojo { background: var(--rojo); color: white; }
         .btn-ghost { background: transparent; color: var(--oro); border: 1px solid var(--oro); }
-
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #244b42; background: #050F0D; color: white; box-sizing: border-box; }
-
-        /* Carrito y Menú */
-        .pizza-card { display: flex; justify-content: space-between; align-items: center; }
-        .price { color: var(--oro); font-weight: 700; font-size: 18px; }
-        .badge { background: var(--rojo); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; position: absolute; margin-left: 15px; }
-
-        /* Modal Scrolleable */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: var(--gris-fondo); margin: 5% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 450px; border: 1px solid var(--oro); }
-
-        .ingrediente-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #244b42; }
-        
-        /* Nav */
-        .nav { position: fixed; bottom: 0; width: 100%; background: #050F0D; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--oro); }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #050F0D; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--oro); z-index: 100; }
         .nav-btn { color: #6a8b84; text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; }
         .nav-btn.active { color: var(--oro); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        .modal-content { background: var(--gris-fondo); margin: 5% auto; padding: 20px; border-radius: 15px; width: 85%; max-width: 400px; border: 1px solid var(--oro); }
+        .pizza-card { display: flex; justify-content: space-between; align-items: center; }
+        .badge { background: var(--rojo); color: white; padding: 2px 7px; border-radius: 50%; font-size: 10px; position: absolute; margin-left: 12px; }
     </style>
 </head>
 <body>
 
-<header><h1>SAHARA PIZZERÍA</h1></header>
-
+<header><h1>SAHARA</h1></header>
 <div id="app"></div>
 
 <div id="modalPizza" class="modal">
     <div class="modal-content">
         <h3 id="mSabor" style="color:var(--oro); margin-top:0"></h3>
         <div id="ingredientesList"></div>
-        <button class="btn" style="background:var(--verde-exito)" onclick="cart.addToCart()">AÑADIR AL CARRITO</button>
-        <button class="btn btn-rojo" onclick="ui.closeModal()">CANCELAR</button>
+        <button class="btn" style="background:var(--verde-exito)" onclick="cart.addToCart()">Añadir al Carrito</button>
+        <button class="btn btn-rojo" onclick="ui.closeModal()">Cerrar</button>
     </div>
 </div>
 
 <nav id="main-nav" class="nav" style="display:none">
     <div class="nav-btn" onclick="ui.renderMenu()">🍕<br>Menú</div>
     <div class="nav-btn" onclick="ui.renderCart()">🛒<br>Carrito <span id="cartCount" class="badge">0</span></div>
-    <div id="nav-admin" class="nav-btn" onclick="ui.renderAdmin()">📊<br>Perfil</div>
+    <div class="nav-btn" onclick="ui.renderAdmin()">👤<br>Perfil</div>
 </nav>
 
 <script>
-// --- CONFIGURACIÓN ---
 const CONFIG = {
     URL: 'https://script.google.com/macros/s/AKfycbxRuWSGX24MbN6A2y8I4r0FcZpHPFTR2yvG-c-pOT8_WGnD9u-wzAXwOsF9mtq_AdA/exec',
-    WS_PHONE: '593900000000', // <--- CAMBIA ESTO AQUÍ
-    COSTO_EXTRA: 1.00
+    WS_PHONE: '593960916658' // <-- Tu número real aquí
 };
 
-// --- ESTADO GLOBAL ---
 let state = {
     user: JSON.parse(localStorage.getItem('sahara_session')) || null,
     menu: [],
@@ -82,173 +65,116 @@ let state = {
     tempPizza: null
 };
 
-// --- LÓGICA DE USUARIO ---
 const auth = {
     async login() {
         const clave = document.getElementById('clave').value;
-        if(!clave) return alert("Ingresa tu clave");
-        
+        const btn = document.querySelector('.btn');
+        btn.innerText = "Verificando...";
         try {
             const resp = await fetch(`${CONFIG.URL}?pestaña=Usuarios`);
             const users = await resp.json();
             const found = users.find(u => u.Token.toString() === clave);
-            
             if(found) {
                 state.user = found;
                 localStorage.setItem('sahara_session', JSON.stringify(found));
                 ui.initApp();
-            } else {
-                alert("Clave incorrecta");
-            }
-        } catch(e) { alert("Error de conexión"); }
+            } else { alert("Clave incorrecta"); btn.innerText = "Entrar"; }
+        } catch(e) { alert("Error de red"); btn.innerText = "Entrar"; }
     },
-
     loginGuest() {
         state.user = { Token: 0, Nombre: "Invitado", Rol: "GUEST" };
         ui.initApp();
     },
-
-    async register() {
-        const n = prompt("Tu Nombre:");
-        const t = prompt("Tu Teléfono:");
-        const k = prompt("Crea tu Clave (Token):");
-        if(!n || !t || !k) return;
-
-        const data = { accion: "REGISTRO_SIMPLE", pestaña: "Usuarios", datos: [k, n, "", "GUEST", "NO", "NO", "SI", "True", new Date()] };
-        await fetch(CONFIG.URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        alert("¡Cuenta creada! Ahora inicia sesión.");
-    },
-
-    logout() {
-        localStorage.removeItem('sahara_session');
-        location.reload();
-    }
+    logout() { localStorage.removeItem('sahara_session'); location.reload(); }
 };
 
-// --- LÓGICA DE CARRITO ---
 const cart = {
     openCustom(index) {
-        state.tempPizza = { ...state.menu[index], extras: [] };
+        state.tempPizza = { ...state.menu[index] };
         document.getElementById('mSabor').innerText = state.tempPizza.Sabor;
         const list = document.getElementById('ingredientesList');
-        list.innerHTML = "<h4>Ajustar Ingredientes:</h4>";
-        
-        // Ingredientes base (ejemplo sacado de tus columnas)
-        const base = ['Masa', 'Pomo', 'Queso', 'Jamon', 'Peppe', 'Champ'];
-        base.forEach(ing => {
-            if(state.tempPizza[ing+'_g'] > 0) {
-                list.innerHTML += `
-                    <div class="ingrediente-row">
-                        <span>${ing}</span>
-                        <input type="checkbox" checked onchange="cart.toggleIng('${ing}')">
-                    </div>`;
-            }
+        list.innerHTML = "<p style='font-size:12px'>Ingredientes incluidos:</p>";
+        ['Masa','Pomo','Queso','Jamon','Peppe','Champ'].forEach(i => {
+            if(state.tempPizza[i+'_g'] > 0) list.innerHTML += `<div style="padding:5px; border-bottom:1px solid #244b42">✔ ${i}</div>`;
         });
         document.getElementById('modalPizza').style.display = 'block';
     },
-
-    toggleIng(ing) {
-        // Lógica simple para quitar/poner
-    },
-
-    addToCart() {
-        state.cart.push(state.tempPizza);
-        ui.closeModal();
-        ui.updateCartBadge();
-        alert("Añadido!");
-    }
+    addToCart() { state.cart.push(state.tempPizza); ui.closeModal(); ui.updateCartBadge(); },
+    removeItem(i) { state.cart.splice(i, 1); ui.renderCart(); ui.updateCartBadge(); }
 };
 
-// --- INTERFAZ (UI) ---
 const ui = {
-    initApp() {
-        document.getElementById('main-nav').style.display = 'flex';
-        this.renderMenu();
-    },
-
+    initApp() { document.getElementById('main-nav').style.display = 'flex'; this.renderMenu(); },
     renderLogin() {
         document.getElementById('app').innerHTML = `
             <div class="card" style="text-align:center">
-                <h2 style="color:var(--oro)">INICIO DE SESIÓN</h2>
-                <input type="password" id="clave" placeholder="Ingresa tu Clave" onkeypress="if(event.key==='Enter') auth.login()">
+                <h2 style="color:var(--oro)">INICIO</h2>
+                <input type="password" id="clave" placeholder="Clave" onkeypress="if(event.key==='Enter') auth.login()">
                 <button class="btn" onclick="auth.login()">Entrar</button>
-                <button class="btn btn-ghost" onclick="auth.loginGuest()" style="margin-top:15px">Continuar como Invitado</button>
-                <p onclick="auth.register()" style="font-size:12px; cursor:pointer; margin-top:20px; text-decoration:underline">¿No tienes cuenta? Regístrate</p>
+                <button class="btn btn-ghost" onclick="auth.loginGuest()">Modo Invitado</button>
             </div>`;
     },
-
     async renderMenu() {
         const container = document.getElementById('app');
-        container.innerHTML = "<p>Cargando menú...</p>";
-        if(state.menu.length === 0) {
+        container.innerHTML = "<p>Cargando sabores...</p>";
+        try {
             const r = await fetch(`${CONFIG.URL}?pestaña=Recetas_Finales`);
-            state.menu = await r.json();
-        }
-        container.innerHTML = "<h2 style='color:var(--oro)'>NUESTRO MENÚ</h2>";
-        state.menu.forEach((p, i) => {
-            if(p.Activo === "True") {
+            const rawData = await r.json();
+            // Filtrar solo las que tengan precio y sabor válido
+            state.menu = rawData.filter(p => p.Sabor && p.Precio_Venta > 0);
+            container.innerHTML = "<h2 style='color:var(--oro)'>MENU</h2>";
+            state.menu.forEach((p, i) => {
                 container.innerHTML += `
                 <div class="card pizza-card">
                     <div><b>${p.Sabor}</b><br><small>${p.Tamaño}</small></div>
                     <div style="text-align:right">
-                        <span class="price">$${p.Precio_Venta}</span><br>
-                        <button class="btn" style="width:auto; padding:5px 10px" onclick="cart.openCustom(${i})">+</button>
+                        <span style="color:var(--oro);font-weight:bold">$${Number(p.Precio_Venta).toFixed(2)}</span><br>
+                        <button class="btn" style="width:auto; padding:5px 12px" onclick="cart.openCustom(${i})">+</button>
                     </div>
                 </div>`;
-            }
-        });
+            });
+        } catch(e) { container.innerHTML = "<p>Error al cargar el menú. Revisa tu Excel.</p>"; }
     },
-
     renderCart() {
         const container = document.getElementById('app');
+        container.innerHTML = "<h2 style='color:var(--oro)'>CARRITO</h2>";
+        if(state.cart.length === 0) return container.innerHTML += "<p>Vacío</p>";
         let total = 0;
-        container.innerHTML = "<h2 style='color:var(--oro)'>TU PEDIDO</h2>";
-        if(state.cart.length === 0) return container.innerHTML += "<p>El carrito está vacío</p>";
-        
-        state.cart.forEach(item => {
-            total += item.Precio_Venta;
-            container.innerHTML += `<div class="card">${item.Sabor} - $${item.Precio_Venta}</div>`;
+        state.cart.forEach((item, i) => {
+            total += Number(item.Precio_Venta);
+            container.innerHTML += `<div class="card pizza-card"><span>${item.Sabor}</span><button onclick="cart.removeItem(${i})" style="background:none; border:none; color:var(--rojo)">✖</button></div>`;
         });
-
-        container.innerHTML += `
-            <div class="card">
-                <h3>Total: $${total.toFixed(2)}</h3>
-                <select id="finalType">
-                    <option value="mesa">En Mesa</option>
-                    <option value="pickup">Recoger</option>
-                    <option value="delivery">A domicilio</option>
-                </select>
-                <button class="btn" style="background:var(--verde-exito)" onclick="ui.checkout(${total})">CONFIRMAR TODO</button>
-            </div>`;
+        container.innerHTML += `<div class="card"><h3>Total: $${total.toFixed(2)}</h3><button class="btn" style="background:var(--verde-exito)" onclick="ui.checkout(${total})">PEDIR AHORA</button></div>`;
     },
-
-    async checkout(total) {
-        const type = document.getElementById('finalType').value;
-        if(type === 'delivery') {
-            window.open(`https://wa.me/${CONFIG.WS_PHONE}?text=Hola! Quiero confirmar mi pedido de $${total}. Aquí mi ubicación:`);
-        }
-        alert("Pedido enviado a cocina. ¡Gracias!");
-        state.cart = [];
-        this.updateCartBadge();
-        this.renderMenu();
+    checkout(t) {
+        const msg = encodeURIComponent(`Hola Sahara! Confirmo mi pedido de $${t.toFixed(2)}.`);
+        window.open(`https://wa.me/${CONFIG.WS_PHONE}?text=${msg}`);
+        state.cart = []; this.updateCartBadge(); this.renderMenu();
     },
-
     renderAdmin() {
-        document.getElementById('app').innerHTML = `
+        const container = document.getElementById('app');
+        container.innerHTML = `
             <div class="card">
                 <h2 style="color:var(--oro)">MI PERFIL</h2>
-                <p>Hola, ${state.user.Nombre}</p>
-                <button class="btn btn-rojo" onclick="auth.logout()">CERRAR SESIÓN</button>
-                <hr style="border-color:#244b42; margin:20px 0">
-                <button class="btn btn-ghost" onclick="window.open('https://docs.google.com/spreadsheets/d/1qCZ74rC_kX-eG-C8Xz-g1x_xXm8f7_S7RFb8/edit')">ADMINISTRAR EXCEL</button>
+                <p><b>Nombre:</b> ${state.user.Nombre}</p>
+                <p><b>Rol:</b> ${state.user.Rol}</p>
+                <div style="margin-top:15px">
+                    <label style="font-size:12px">Preferencias / Personalización:</label>
+                    <textarea id="pref" placeholder="Ej: Siempre sin cebolla, o alergias...">${localStorage.getItem('sahara_pref') || ''}</textarea>
+                    <button class="btn" style="font-size:10px" onclick="localStorage.setItem('sahara_pref', document.getElementById('pref').value); alert('Guardado')">Guardar Preferencias</button>
+                </div>
+                ${state.user.Rol === 'ADMIN' ? `<button class="btn btn-ghost" style="margin-top:20px" onclick="window.open('https://docs.google.com/spreadsheets/d/1qCZ74rC_kX-eG-C8Xz-g1x_xXm8f7_S7RFb8/edit')">ADMINISTRAR EXCEL</button>` : ''}
+                <button class="btn btn-rojo" style="margin-top:10px" onclick="auth.logout()">Cerrar Sesión</button>
+            </div>
+            <div class="card" style="font-size:10px; color:#6a8b84">
+                <b>PROMOCIONES SAHARA:</b><br>
+                ¡Próximamente sistema de puntos por cada compra!
             </div>`;
     },
-
     closeModal() { document.getElementById('modalPizza').style.display = 'none'; },
     updateCartBadge() { document.getElementById('cartCount').innerText = state.cart.length; }
 };
 
-// --- INICIO ---
 if(state.user) ui.initApp(); else ui.renderLogin();
 </script>
 </body>
