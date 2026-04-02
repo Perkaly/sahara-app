@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara | Sistema Integral v4.1</title>
+    <title>Sahara | Pizzería</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --oro: #D4AF37;
             --verde-sahara: #0A1F1A;
             --gris-fondo: #16322C;
-            --blanco #FFFFFF;
+            --blanco: #FFFFFF;
             --rojo: #922B21;
             --verde-exito: #1E8449;
+            --gris-claro: #6a8b84;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Open Sans', sans-serif; 
             background: var(--verde-sahara); 
             color: var(--blanco); 
             margin: 0; 
-            overflow-x: hidden; 
-            padding-bottom: 90px;
+            padding-bottom: 80px;
+            line-height: 1.5;
         }
         header { 
             background: #050F0D; 
@@ -30,85 +32,139 @@
             border-bottom: 2px solid var(--oro); 
             position: sticky; 
             top: 0; 
-            z-index: 100; 
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         h1 { 
             font-family: 'Montserrat', sans-serif; 
             color: var(--oro); 
             margin: 0; 
-            letter-spacing: 2px; 
-            font-size: 22px; 
- }
+            letter-spacing: 1.5px; 
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
         #app { 
             padding: 15px; 
             max-width: 600px; 
             margin: auto; 
-            min-height: 80vh; 
+            min-height: calc(100vh - 140px);
         }
         .card { 
             background: var(--gris-fondo); 
-            border-radius: 12px; 
-            padding: 18px; 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border: 1px solid #244b42;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .card-title { 
+            color: var(--oro); 
             margin-bottom: 15px; 
-            border: 1px solid #244b42; 
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title::before {
+            content: "•";
+            color: var(--oro);
+            font-size: 28px;
+            line-height: 1;
         }
         
         .btn { 
             background: var(--oro); 
             color: #050F0D; 
             border: none; 
-            padding: 12px; 
-            border-radius: 8px; 
+            padding: 14px 20px; 
+            border-radius: 10px; 
             font-weight: 700; 
             width: 100%; 
             cursor: pointer; 
             text-transform: uppercase; 
-            margin-top: 5px; 
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
         }
+        .btn:hover { 
+            background: #c19a2a; 
+            transform: translateY(-2px);
+        }
+        .btn:active { transform: translateY(1px); }
         .btn-rojo { 
             background: var(--rojo); 
-            color: white; 
+            color: white;
+            box-shadow: 0 4px 8px rgba(146, 43, 33, 0.3);
         }
+        .btn-rojo:hover { background: #7d2821; }
         .btn-ghost { 
             background: transparent; 
             color: var(--oro); 
-            border: 1px solid var(--oro); 
+            border: 2px solid var(--oro);
+            box-shadow: none;
         }
+        .btn-ghost:hover { 
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .btn-success { 
+            background: var(--verde-exito);
+            box-shadow: 0 4px 8px rgba(30, 132, 73, 0.3);
+        }
+        .btn-success:hover { background: #1a733f; }
 
         input, select, textarea { 
             width: 100%; 
-            padding: 12px; 
-            margin: 8px 0; 
-            border-radius: 6px; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
             border: 1px solid #244b42; 
             background: #050F0D; 
             color: white; 
-            box-sizing: border-box; 
+            font-size: 16px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--oro);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
         }
 
-        /* Carrito y Menú */
+        /* Menú y pizzas */
         .pizza-card { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(22, 50, 44, 0.7);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .pizza-card:hover {
+            background: rgba(22, 50, 44, 0.9);
+            transform: translateX(5px);
+        }
+        .pizza-info h3 {
+            color: var(--blanco);
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .pizza-info .size {
+            color: var(--gris-claro);
+            font-size: 14px;
         }
         .price { 
             color: var(--oro); 
-            font-weight: 700; 
-            font-size: 18px; 
-        }
-        .badge { 
-            background: var(--rojo); 
-            color: white; 
-            padding: 2px 8px; 
-            border-radius: 10px; 
-            font-size: 12px; 
-            position: absolute; 
-            margin-left: 15px; 
+            font-weight: 800; 
+            font-size: 22px; 
+            font-family: 'Montserrat', sans-serif;
+            text-align: right;
         }
 
-        /* Modal Scrolleable */
+        /* Modal de personalización */
         .modal { 
             display: none; 
             position: fixed; 
@@ -116,28 +172,118 @@
             left: 0; 
             top: 0; 
             width: 100%; 
-            height 100%; 
-            background: rgba(0,0,0,0.9); 
-            overflow-y: auto; 
+            height: 100%; 
+            background: rgba(5, 15, 13, 0.95);
+            overflow-y: auto;
+            padding: 20px;
         }
         .modal-content { 
             background: var(--gris-fondo); 
-            margin: 5% auto; 
-            padding: 20px; 
-            border-radius: 15px; 
-            width: 90%; 
-            max-width: 450px; 
-            border: 1px solid var(--oro); 
+            margin: 40px auto; 
+            padding: 25px; 
+            border-radius: 20px; 
+            width: 95%; 
+            max-width: 500px; 
+            border: 2px solid var(--oro);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        .modal-title {
+            color: var(--oro);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: var(--gris-claro);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: var(--oro); }
+
+        .option-group {
+            margin: 20px 0;
+        }
+        .option-group h4 {
+            color: var(--oro);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #244b42;
+        }
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #244b42;
+        }
+        .option-label {
+            font-size: 16px;
+        }
+        .option-price {
+            color: var(--oro);
+            font-weight: 600;
+        }
+        .size-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .size-btn {
+            background: rgba(30, 50, 45, 0.8);
+            border: 2px solid #244b42;
+            color: var(--blanco);
+            padding: 12px 5px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .size-btn.active, .size-btn:hover {
+            background: var(--oro);
+            color: #050F0D;
+            border-color: var(--oro);
         }
 
-        .ingrediente-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 8px 0; 
-            border-bottom: 1px solid #244b42; 
-        }        
-        /* Nav */
+        /* Carrito */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #244b42;
+        }
+        .cart-total {
+            text-align: right;
+            font-size: 24px;
+            color: var(--oro);
+            font-weight: 800;
+            margin: 20px 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--rojo);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid var(--verde-sahara);
+        }
+
+        /* Navegación inferior */
         .nav { 
             position: fixed; 
             bottom: 0; 
@@ -146,46 +292,161 @@
             display: flex; 
             justify-content: space-around; 
             padding: 12px 0; 
-            border-top: 1px solid var(--oro); 
+            border-top: 2px solid var(--oro); 
+            max-width: 600px;
+            margin: auto;
+            left: 0;
+            right: 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
         }
         .nav-btn { 
-            color: #6a8b84; 
+            color: var(--gris-claro); 
             text-decoration: none; 
             font-size: 11px; 
             text-align: center; 
             cursor: pointer; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 33.33%;
+            padding: 5px 0;
         }
         .nav-btn.active { 
             color: var(--oro); 
+            font-weight: 600;
+        }
+        .nav-btn i {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .nav-btn.active i {
+            font-size: 28px;
+        }
+
+        /* Login */
+        .login-container {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .login-title {
+            color: var(--oro);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .login-subtitle {
+            color: var(--gris-claro);
+            margin: 15px 0 25px;
+            font-size: 16px;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #244b42;
+        }
+        .divider span {
+            padding: 0 15px;
+            color: var(--gris-claro);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .size-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            h1 { font-size: 22px; }
+            .price { font-size: 20px; }
+            .btn { padding: 12px; font-size: 15px; }
         }
     </style>
 </head>
 <body>
 
-<header><h1>SAHARA PIZZERÍA</h1></header>
+<header>
+    <h1>SAHARA PIZZERÍA</h1>
+</header>
 
-<div id="app"></div>
+<div id="app">
+    <!-- Contenido dinámico aquí -->
+</div>
 
-<div id="modalPizza" classmodal">
+<!-- Modal de Personalización -->
+<div id="modalPizza" class="modal">
     <div class="modal-content">
-        <h3 id="mSabor" style="color:var(--oro); margin-top:0"></h3>
-        <div id="ingredientesList"></div>
-        <button class="btn" style="background:var(--verde-exito)" onclick="cart.addToCart()">AÑADIR AL CARRITO</button>
-        <button class="btn btn-rojo" onclick="ui.closeModal()">CANCELAR</button>
+        <span class="close-modal" onclick="ui.closeModal()">&times;</span>
+        <h3 class="modal-title" id="mSabor">AMERICANA</h3>
+        
+        <div class="option-group">
+            <h4>Tamaño</h4>
+            <div class="size-selector" id="sizeSelector">
+                <div class="size-btn active" data-size="Personal" onclick="cart.selectSize(this, 'Personal')">Personal</div>
+                <div class="size-btn" data-size="Mediana" onclick="cart.selectSize(this, 'Mediana')">Mediana</div>
+                <div class="size-btn" data-size="Grande" onclick="cart.selectSize(this, 'Grande')">Grande</div>
+            </div>
+        </div>
+        
+        <div class="option-group">
+            <h4>Ingredientes</h4>
+            <div class="option-row">
+                <span class="option-label">Extra Queso</span>
+                <span class="option-price">+$1.50</span>
+            </div>
+            <label class="option-row" style="cursor:pointer">
+                <span class="option-label">Extra Jamón</span>
+                <input type="checkbox" id="extraJamon" onchange="cart.toggleExtra('jamon')">
+            </label>
+            <label class="option-row" style="cursor:pointer">
+                <span class="option-label">Extra Pepperoni</span>
+                <input type="checkbox" id="extraPepperoni" onchange="cart.toggleExtra('pepperoni')">
+            </label>
+            <label class="option-row" style="cursor:pointer">
+                <span class="option-label">Sin Cebolla</span>
+                <input type="checkbox" id="sinCebolla" onchange="cart.toggleExtra('sin_cebolla')">
+            </label>
+        </div>
+        
+        <div class="option-group">
+            <h4>Precio Total</h4>
+            <div class="price" id="precioTotal">$18.99</div>
+        </div>
+        
+        <button class="btn btn-success" onclick="cart.addToCart()">AÑADIR AL CARRITO</button>
     </div>
 </div>
 
+<!-- Navegación Inferior -->
 <nav id="main-nav" class="nav" style="display:none">
-    <div class="nav-btn" onclick="ui.renderMenu()">🍕<br>Menú</div>
-    <div class="nav-btn" onclick="ui.renderCart()">🛒<br>Carrito <span id="cartCount" class="badge">0</span></div>
-    <div class="nav-btn" onclick="ui.renderProfile()">👤<br>Perfil</div>
+    <div class="nav-btn" onclick="ui.renderMenu()">
+        <span>🍕</span>
+        <span>Menú</span>
+    </div>
+    <div class="nav-btn" onclick="ui.renderCart()">
+        <span>🛒</span>
+        <span>Carrito</span>
+        <span class="cart-badge" id="cartCount">0</span>
+    </div>
+    <div class="nav-btn" onclick="ui.renderProfile()">
+        <span>👤</span>
+        <span>Mi Cuenta</span>
+    </div>
 </nav>
 
 <script>
 // --- CONFIGURACIÓN ---
 const CONFIG = {
     URL: 'https://script.google.com/macros/s/AKfycbxRuWSGX24MbN6A2y8I4r0FcZpHPFTR2yvG-c-pOT8_WGnD9u-wzAXwOsF9mtq_AdA/exec',
-    WS_PHONE: '+5930960915566' // 👉 CAMBIA ESTO POR TU NÚMERO REAL
+    WS_PHONE: '593960916658', // Tu número real de WhatsApp
+    COSTO_EXTRA: 1.50,
+    SUCURSAL_DEFAULT: 1
 };
 
 // --- ESTADO GLOBAL ---
@@ -193,129 +454,169 @@ let state = {
     user: JSON.parse(localStorage.getItem('sahara_session')) || null,
     menu: [],
     cart: [],
-    tempPizza: null
+    tempPizza: null,
+    sucursal: CONFIG.SUCURSAL_DEFAULT
 };
 
 // --- LÓGICA DE USUARIO ---
 const auth = {
     async login() {
-        const clave = document.getElementById('clave').value;
-        if(!clave) return alert("Ingresa tu clave");
+        const clave = document.getElementById('clave').value.trim();
+        if (!clave) return alert("Por favor ingresa tu clave");
         
         try {
             const resp = await fetch(`${CONFIG.URL}?pestaña=Usuarios`);
             const users = await resp.json();
-            const found = users.find(u => u.Token?.toString() === clave);
             
-            if(found) {
-                state.user = found;
-                localStorage.setItem('sahara_session', JSON.stringify(found));
+            const found = users.find(u => 
+                u.Token && u.Token.toString().trim() === clave
+            );
+            
+            if (found && found.Activo === "TRUE") {
+                state.user = {
+                    token: found.Token,
+                    nombre: found.Nombre || 'Usuario',
+                    rol: found.Rol || 'GUEST',
+                    acceso_bodega: found.Acceso_Bodega === "SI",
+                    acceso_cocina: found.Acceso_Cocina === "SI",
+                    acceso_menu: found.Acceso_Menu === "SI"
+                };
+                
+                localStorage.setItem('sahara_session', JSON.stringify(state.user));
                 ui.initApp();
             } else {
-                alert("Clave incorrecta");
+                alert("Clave incorrecta o usuario inactivo");
             }
-        catch(e) { 
+        } catch (e) {
             console.error("Error login:", e);
             alert("Error de conexión. Verifica tu internet.");
         }
     },
 
     loginGuest() {
-        state.user = { Token: 0, Nombre: "Invitado", Rol: "GUEST" };
+        state.user = { 
+            token: '0', 
+            nombre: 'Invitado', 
+            rol: 'GUEST',
+            acceso_bodega: false,
+            acceso_cocina: false,
+            acceso_menu: true
+        };
         ui.initApp();
     },
 
     logout() {
         localStorage.removeItem('sahara_session');
-        location.reload();
+        state.user = null;
+        ui.renderLogin();
     }
 };
 
 // --- LÓGICA DE CARRITO ---
 const cart = {
     openCustom(index) {
-        const p = state.menu[index];
-        state.tempPizza = { 
-            ...p,
-            size: p.Tamaño,
-            extras: []
-        };
-
-        document.getElementById('mSabor').innerText = `${p.Sabor} (${p.Tamaño})`;
-        const list = document.getElementById('ingredientesList');
+        const pizza = state.menu[index];
+        if (!pizza) return;
         
-        // Tamaños
-        list.innerHTML = `
-            <h4>Tamaño</h4>
-            <div class="ingrediente-row">
-                <span>Personal</span>
-                <input type="radio" name="size" value="Personal" ${p.Tamaño === 'Personal' ? 'checked' : ''} onchange="cart.selectSize('Personal')">
-            </div>
-            <div class="ingrediente-row">
-                <span>Mediana</span>
-                <input type="radio"="size" value="Mediana" ${p.Tamaño === 'Mediana' ? 'checked' : ''} onchange="cart.selectSize('Mediana')">
-            </div>
-            <div class="ingrediente-row">
-                <span>Grande</span>
-                <input type="radio" name="size" value="Grande" ${p.Tamaño === 'Grande' ? 'checked' : ''} onchange="cart.selectSize('Grande')">
-            </div>
-
-            <h4>Extras (+$1.00)</h4>
-            <div class="ingrediente-row">
-                <span>Extra Queso</span>
-                <input type="checkbox" onchange="cart.toggleExtra('queso')">
-            </div>
-            <div class="ingrediente-row">
-                <span>Extra Jamón</span>
-                <input type="checkbox" onchange="cart.toggleExtra('j">
-            </div>
-            <div class="ingrediente-row">
-                <span>Extra Pepperoni</span>
-                <input type="checkbox" onchange="cart.toggleExtra('peppe')">
-            </div>
-            <div class="ingrediente-row">
-                <span>Sin Cebolla</span>
-                <input type="checkbox" onchange="cart.toggleExtra('sin_cebolla')">
-            </div>
-        `;
-
+        state.tempPizza = { 
+            ...pizza,
+            size: pizza.Tamaño || 'Personal',
+            extras: [],
+            precioBase: parseFloat(pizza.Precio_Venta) || 0
+        };
+        
+        // Actualizar UI del modal
+        document.getElementById('mSabor').innerText = pizza.Sabor || 'Pizza';
+        document.getElementById('precioTotal').innerText = `$${state.tempPizza.precioBase.toFixed(2)}`;
+        
+        // Resetear selecciones
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.size === state.tempPizza.size);
+        });
+        document.getElementById('extraJamon').checked = false;
+        document.getElementById('extraPepperoni').checked = false;
+        document.getElementById('sinCebolla').checked = false;
+        
         document.getElementById('modalPizza').style.display = 'block';
     },
 
-    selectSize(size) {
+    selectSize(btn, size) {
+        // Actualizar botones activos
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Actualizar precio según tamaño (simplificado para Fase 1)
+        const precios = {
+            'Personal': 12.99,
+            'Mediana': 15.99,
+            'Grande': 18.99
+        };
+        
         state.tempPizza.size = size;
+        state.tempPizza.precioBase = precios[size] || 12.99;
+        this.updatePrice();
     },
-    
+
     toggleExtra(extra) {
         if (!state.tempPizza.extras) state.tempPizza.extras = [];
-        const i = state.tempPizza.extras.indexOf(extra);
-        if (i === -1) {
+        
+        const idx = state.tempPizza.extras.indexOf(extra);
+        if (idx === -1) {
             state.tempPizza.extras.push(extra);
         } else {
-            state.tempPizza.extras.splice(i, 1);
+            state.tempPizza.extras.splice(idx, 1);
         }
+        
+        this.updatePrice();
+    },
+
+    updatePrice() {
+        let total = state.tempPizza.precioBase;
+        const extrasCount = state.tempPizza.extras ? state.tempPizza.extras.length : 0;
+        total += extrasCount * CONFIG.COSTO_EXTRA;
+        
+        document.getElementById('precioTotal').innerText = `$${total.toFixed(2)}`;
     },
 
     addToCart() {
-        let precio = parseFloat(state.tempPizza.Precio_Venta) || 0;
+        if (!state.tempPizza) return;
+        
+        // Calcular precio final con extras
+        let precioFinal = state.tempPizza.precioBase;
         if (state.tempPizza.extras && state.tempPizza.extras.length > 0) {
-            precio += state.tempPizza.extras.length * 1.00;
+            precioFinal += state.tempPizza.extras.length * CONFIG.COSTO_EXTRA;
         }
-
-        state.cart.push({
-            sabor: state.tempPizza.Sabor,
-            tamaño: state.tempPizza.size,
-            precioFinal: parseFloat(precio.toFixed(2)),
-            extras: [...(state.tempPizza.extras || [])]
-        });
-
+        
+        // Crear item para el carrito
+        const item = {
+            id: Date.now(),
+            nombre: state.tempPizza.Sabor || 'Pizza',
+            size: state.tempPizza.size,
+            extras: [...(state.tempPizza.extras || [])],
+            precio: precioFinal,
+            cantidad: 1
+        };
+        
+        state.cart.push(item);
         ui.closeModal();
         ui.updateCartBadge();
-        alert("✅ Añadido al carrito!");
+        ui.showToast("✅ ¡Añadido al carrito!");
+    },
+
+    removeFromCart(index) {
+        state.cart.splice(index, 1);
+        ui.updateCartBadge();
+        ui.renderCart();
+    },
+
+    clearCart() {
+        state.cart = [];
+        ui.updateCartBadge();
+        ui.renderCart();
     }
 };
 
-// --- INTERFAZ (UI) ---
+// --- INTERFAZ DE USUARIO ---
 const ui = {
     initApp() {
         document.getElementById('main-nav').style.display = 'flex';
@@ -324,155 +625,353 @@ const ui = {
 
     renderLogin() {
         document.getElementById('app').innerHTML = `
-            <div class="card" style="text-align:center">
-                <h2 style="color:var(--oro)">INICIO DE SESIÓN</h2>
-                <input type="password" id="clave" placeholder="Clave (ej: 1234)" onkeypress="if(event.key==='Enter') auth.login()">
-                <button class="btn" onclick="auth.login()">Entrar</button>
-                <button class="btn btn-ghost" onclick="auth.loginGuest()" style="margin-top:15px">Continuar como Invitado</button>
+            <div class="login-container">
+                <h2 class="login-title">SAHARA</h2>
+                <p class="login-subtitle">Sabor que conecta</p>
+                
+                <div class="card">
+                    <input type="password" id="clave" placeholder="🔑 Clave de acceso" 
+                           onkeypress="if(event.key==='Enter') auth.login()">
+                    <button class="btn" onclick="auth.login()">INGRESAR</button>
+                    
+                    <div class="divider">
+                        <span>O</span>
+                    </div>
+                    
+                    <button class="btn btn-ghost" onclick="auth.loginGuest()">
+                        🍕 PEDIR SIN REGISTRARME
+                    </button>
+                    
+                    <p style="color:var(--gris-claro); font-size:14px; margin-top:25px;">
+                        Tu pedido se procesa igual. Sin registro no acumulas puntos Sahara.
+                    </p>
+                </div>
             </div>`;
     },
 
     async renderMenu() {
         const container = document.getElementById('app');
-        container.innerHTML = "<p>Cargando menú...</p>";
+        container.innerHTML = `
+            <div class="card">
+                <h2 class="card-title">NUESTRO MENÚ</h2>
+                <p style="color:var(--gris-claro); margin-bottom:20px;">Elige tu pizza favorita</p>
+                <div id="menuLoader" style="text-align:center; padding:30px">
+                    <div style="display:inline-block; width:40px; height:40px; border:3px solid rgba(212,175,55,0.3); 
+                                border-radius:50%; border-top-color:var(--oro); animation:spin 1s linear infinite;"></div>
+                    <p style="margin-top:15px; color:var(--gris-claro)">Cargando menú...</p>
+                </div>
+            </div>
+            
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        `;
         
-        if (state.length === 0) {
-            try {
-                const resp = await fetch(`${CONFIG.URL}?pestaña=Recetas_Finales`);
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                
-                const data = await resp.json();
-                if (!Array.isArray(data) || data.length < 1) {
-                    throw new Error("Formato inválido: esperaba array");
-                }
-
-                // Si la primera fila es encabezado, saltarla
-                const rows = data[0].includes ? data.slice(1) : data;
-                state.menu = rows.map(row => ({
-                    Sabor: row[0] || "",
-                    Tamaño: row[1] || "",
-                    Masa_g: parseFloat(row[2]) || 0,
-                    Pomo_g: parseFloat(row[3]) || 0,
-                    Queso_g: parseFloat(row[4]) || 0,
-                    Jamon_g: parseFloat(row[5]) || 0,
-                    Peppe_g: parseFloat(row[6]) || 0,
-                    Champ_g: parseFloat(row[7]) || 0,
-                    Precio_Venta: parseFloat(row[8]) || 0,
-                    Activo: row[9] === "TRUE" || row[9] === "True" || row[9] === "true"
-                }));
-            } catch (e) {
-                console.error("Error cargando menú:", e);
+        try {
+            // ✅ Corrección crítica: Validar respuesta y estructura
+            const resp = await fetch(`${CONFIG.URL}?pestaña=Recetas_Finales`);
+            if (!resp.ok) throw new Error(`Error ${resp.status}`);
+            
+            const data = await resp.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                throw new Error("Menú vacío o formato inválido");
+            }
+            
+            state.menu = data.filter(p => p.Activo === "TRUE" || p.Activo === true);
+            
+            if (state.menu.length === 0) {
                 container.innerHTML = `
-                    <div class="card" style="text-align:center; color:#f39c12">
-                        <h3>⚠️ Menú no disponible</h3>
-                        <p>Verifica:</p>
-                        <ul style="text-align:left; padding-left:20px;">
-                            <li>Que la pestaña <strong>Recetas_Finales</strong> exista en tu Google Sheet</li>
-                            <li>Que tenga 9 columnas: Sabor, Tamaño, Masa_g, Pomo_g, Queso_g, Jamon_g, Peppe_g, Champ_g, Precio_Venta</li>
-                            <li>Que no haya errores como #DIV/0! en las celdas</li>
-                        </ul>
-                        <button class="btn" onclick="ui.renderLogin()">Volver</button>
+                    <div class="card" style="text-align:center; padding:40px">
+                        <h3 style="color:var(--oro); margin-bottom:15px">⚠️ Menú no disponible</h3>
+                        <p style="color:var(--gris-claro); margin-bottom:25px">
+                            Estamos preparando las mejores pizzas para ti.<br>
+                            Vuelve en unos minutos.
+                        </p>
+                        <button class="btn" onclick="ui.renderLogin()">Volver al inicio</button>
                     </div>`;
                 return;
             }
-        }
-
-        container.innerHTML = "<h2 style='color:var(--oro)'>NUESTRO MENÚ</h2>";
-        state.menu.forEach((p, i) => {
-            if (p.Activo && p.Sabor) {
-                container.innerHTML += `
-                <div class="card pizza-card">
-                    <div><b>${p.Sabor}</b><br><small>${p.Tamaño}</small></div>
-                    <div style="text-align:right">
-                        <span class="price">$${p.Precio_Venta}</span><br>
-                        <button class="btn" style="width:auto; padding:5px 10px" onclick="cart.openCustom(${i})">+</button>
-                    </div>
+            
+            // Renderizar menú
+            container.innerHTML = `
+                <div class="card">
+                    <h2 class="card-title">NUESTRO MENÚ</h2>
+                    <p style="color:var(--gris-claro); margin-bottom:20px;">Elige tu pizza favorita</p>
+                    <div id="menuList"></div>
                 </div>`;
-            }
-        });
+            
+            const menuList = document.getElementById('menuList');
+            state.menu.forEach((pizza, index) => {
+                const precio = parseFloat(pizza.Precio_Venta) || 12.99;
+                menuList.innerHTML += `
+                    <div class="pizza-card" onclick="cart.openCustom(${index})">
+                        <div class="pizza-info">
+                            <h3>${pizza.Sabor || 'Pizza'}</h3>
+                            <div class="size">${pizza.Tamaño || 'Tamaño'}</div>
+                        </div>
+                        <div class="price">$${precio.toFixed(2)}</div>
+                    </div>`;
+            });
+            
+        } catch (e) {
+            console.error("Error cargando menú:", e);
+            container.innerHTML = `
+                <div class="card" style="text-align:center; padding:40px">
+                    <h3 style="color:var(--oro); margin-bottom:15px">⚠️ Error de conexión</h3>
+                    <p style="color:var(--gris-claro); margin-bottom:25px">
+                        No pudimos cargar el menú.<br>
+                        Verifica tu conexión a internet.
+                    </p>
+                    <button class="btn" onclick="ui.renderMenu()">Reintentar</button>
+                    <button class="btn btn-ghost" style="margin-top:15px" onclick="ui.renderLogin()">Volver al inicio</button>
+                </div>`;
+        }
     },
 
     renderCart() {
         const container = document.getElementById('app');
-        let total = 0;
-        container.innerHTML = "<h2 style='color:var(--oro)'>TU PEDIDO</h2>";
         
         if (state.cart.length === 0) {
-            container.innerHTML += "<p>El carrito está vacío</p>";
+            container.innerHTML = `
+                <div class="card" style="text-align:center; padding:40px">
+                    <h2 class="card-title">TU CARRITO</h2>
+                    <p style="color:var(--gris-claro); margin:25px 0; font-size:18px">
+                        🛒 Tu carrito está vacío
+                    </p>
+                    <button class="btn" onclick="ui.renderMenu()">ELEGIR PIZZAS</button>
+                </div>`;
             return;
         }
         
-        state.cart.forEach(item => {
-            total += item.precioFinal;
-            container.innerHTML += `
-                <div class="card">
-                    ${item.sabor} • ${item.tamaño}
-                    <br><span class="price">$${item.precioFinal}</span>
-                    ${item.extras.length > 0 ? `<small>(${item.extras.join(', ')})</small>` : ''}
+        let total = 0;
+        let itemsHTML = '';
+        
+        state.cart.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad;
+            total += subtotal;
+            
+            itemsHTML += `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight:600">${item.nombre} ${item.size}</div>
+                        <div style="color:var(--gris-claro); font-size:14px">
+                            ${item.extras.length > 0 ? item.extras.join(', ') : 'Estándar'}
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div>$${item.precio.toFixed(2)}</div>
+                        <div style="color:var(--gris-claro); font-size:14px; cursor:pointer" 
+                             onclick="cart.removeFromCart(${index})">✕ Eliminar</div>
+                    </div>
                 </div>`;
         });
-
-        container.innerHTML += `
+        
+        container.innerHTML = `
             <div class="card">
-                <h3>Total: $${total.toFixed(2)}</h3>
-                <select id="finalType">
-                    <option value="mesa">En Mesa</option>
-                    <option value="pickup">Recoger</option>
-                    <option value="delivery">A domicilio</option>
+                <h2 class="card-title">TU PEDIDO</h2>
+                ${itemsHTML}
+                <div class="cart-total">Total: $${total.toFixed(2)}</div>
+            </div>
+            
+            <div class="card">
+                <h3 style="color:var(--oro); margin-bottom:15px">.Tipo de servicio</h3>
+                <select id="tipoServicio" class="input">
+                    <option value="mesa">Comer en el local</option>
+                    <option value="pickup">Recoger en tienda</option>
+                    <option value="delivery">Delivery a domicilio</option>
                 </select>
-                <button class="btn" style="background:var(--verde-exito)" onclick="ui.checkout(${total})">CONFIRMAR TODO</button>
+                
+                <div id="direccionField" style="display:none; margin-top:15px">
+                    <input type="text" id="direccion" placeholder="📍 Tu dirección completa">
+                </div>
+                
+                <button class="btn btn-success" style="margin-top:20px" 
+                        onclick="ui.checkout(${total.toFixed(2)})">
+                    CONFIRMAR PEDIDO - $${total.toFixed(2)}
+                </button>
+                
+                <p style="color:var(--gris-claro); font-size:14px; margin-top:15px; text-align:center">
+                    Pago en efectivo al recibir tu pedido
+                </p>
             </div>`;
+        
+        // Mostrar/ocultar campo de dirección según tipo de servicio
+        document.getElementById('tipoServicio').addEventListener('change', (e) => {
+            document.getElementById('direccionField').style.display = 
+                e.target.value === 'delivery' ? 'block' : 'none';
+        });
     },
 
     async checkout(total) {
-        const type = document.getElementById('finalType').value;
+        const tipo = document.getElementById('tipoServicio').value;
+        const direccion = tipo === 'delivery' ? 
+                         document.getElementById('direccion').value.trim() : 
+                         'En local';
         
-        if (state.user.Rol === "GUEST") {
-            const tel = prompt("📱 Tu teléfono (obligatorio para confirmar pedido):");
-            if (!tel || tel.trim() === "") {
-                alert("❌ Teléfono requerido para continuar");
+        if (tipo === 'delivery' && !direccion) {
+            return alert("Por favor ingresa tu dirección para delivery");
+        }
+        
+        // ✅ Flujo para invitados: pedir teléfono obligatorio
+        let telefono = '';
+        if (state.user.rol === 'GUEST') {
+            telefono = prompt("📱 Ingresa tu teléfono para confirmar el pedido:\n(Ej: 960916658)");
+            if (!telefono || telefono.length < 9) {
+                alert("Teléfono inválido. El pedido no fue enviado.");
                 return;
             }
-            
-            const msg = encodeURIComponent(
-                `Hola, quiero confirmar mi pedido de $${total.toFixed(2)}.\nTeléfono: ${tel}\nTipo: ${type.toUpperCase()}`
-            );
-            window.open(`https://wa.me/${CONFIG.WS_PHONE}?text=${msg}`, '_blank');
-            alert("✅ Pedido enviado por WhatsApp. ¡Gracias!");
-            state.cart = [];
-            ui.updateCartBadge();
-            ui.renderMenu();
-            return;
+            state.user.telefono = telefono;
+        } else {
+            telefono = state.user.telefono || 'S/N';
         }
-
-        // Para usuarios registrados (ADMIN/STAFF), aquí iría lógica futura
-        alert("Pedido confirmado. En desarrollo.");
+        
+        // Preparar datos del pedido
+        const pedido = {
+            accion: "REGISTRAR_PEDIDO",
+            cliente_id: state.user.rol === 'GUEST' ? 'INVITADO' : state.user.token,
+            cliente_nombre: state.user.nombre,
+            telefono: telefono,
+            sucursal_id: state.sucursal,
+            tipo_servicio: tipo,
+            metodo_pago: 'efectivo',
+            total: total,
+            notas: tipo === 'delivery' ? `Dirección: ${direccion}` : '',
+            items: state.cart.map(item => ({
+                pizza_id: 0,
+                nombre: `${item.nombre} ${item.size}`,
+                receta_id: 0,
+                cantidad: item.cantidad,
+                precio_unitario: item.precio,
+                personalizacion: item.extras.length > 0 ? item.extras.join(', ') : 'Estándar',
+                notas: ''
+            }))
+        };
+        
+        try {
+            // ✅ Enviar pedido al backend
+            const resp = await fetch(CONFIG.URL, {
+                method: 'POST',
+                mode: 'no-cors', // Google Apps Script requiere esto
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pedido)
+            });
+            
+            // WhatsApp para confirmación
+            const mensaje = encodeURIComponent(
+                `¡Hola Sahara! Quiero confirmar mi pedido:\n` +
+                `Total: $${total.toFixed(2)}\n` +
+                `Servicio: ${tipo === 'mesa' ? 'En local' : tipo === 'pickup' ? 'Recoger' : 'Delivery'}\n` +
+                `${tipo === 'delivery' ? `Dirección: ${direccion}\n` : ''}` +
+                `Teléfono: ${telefono}\n\n` +
+                `Detalle:\n${state.cart.map(i => `• ${i.nombre} ${i.size} $${i.precio.toFixed(2)}`).join('\n')}`
+            );
+            
+            window.open(`https://wa.me/${CONFIG.WS_PHONE}?text=${mensaje}`, '_blank');
+            
+            // Limpiar carrito y mostrar confirmación
+            cart.clearCart();
+            this.showToast("✅ ¡Pedido enviado! Revisa WhatsApp para confirmación.");
+            setTimeout(() => this.renderMenu(), 2000);
+            
+        } catch (e) {
+            console.error("Error checkout:", e);
+            alert("Error al enviar pedido. Por favor intenta nuevamente.");
+        }
     },
 
     renderProfile() {
-        if (!state.user) return ui.renderLogin();
+        if (!state.user) return this.renderLogin();
+        
         document.getElementById('app').innerHTML = `
             <div class="card">
-                <h2 style="color:var(--oro)">MI PERFIL</h2>
-                <p>Hola, ${state.user.Nombre}</p>
-                <button class="btn btn-rojo" onclick="auth.logout()">CERRAR SESIÓN</button>
+                <h2 class="card-title">MI CUENTA</h2>
+                <div style="text-align:center; padding:20px 0">
+                    <div style="font-size:48px; margin-bottom:15px">👤</div>
+                    <h3 style="font-size:24px; margin-bottom:5px">${state.user.nombre}</h3>
+                    <p style="color:var(--gris-claro)">
+                        ${state.user.rol === 'GUEST' ? 'Invitado' : state.user.rol}
+                    </p>
+                </div>
+                
+                ${state.user.rol === 'GUEST' ? `
+                    <div style="background:rgba(30,50,45,0.7); border-radius:12px; padding:15px; margin:20px 0">
+                        <p style="color:var(--gris-claro); margin-bottom:15px">
+                            🔹 Sin registro no acumulas puntos Sahara<br>
+                            🔹 No guardamos tu historial de pedidos<br>
+                            🔹 Puedes pedir normalmente sin problemas
+                        </p>
+                        <button class="btn btn-ghost" onclick="alert('Función disponible en Fase 3')">
+                            Registrarme para acumular puntos
+                        </button>
+                    </div>
+                ` : ''}
+                
+                <button class="btn btn-rojo" onclick="auth.logout()" style="margin-top:20px">
+                    CERRAR SESIÓN
+                </button>
             </div>`;
     },
 
-    closeModal() { 
-        document.getElementById('modalPizza').style.display = 'none'; 
+    closeModal() {
+        document.getElementById('modalPizza').style.display = 'none';
     },
-    updateCartBadge() { 
-        document.getElementById('cartCount').innerText = state.cart.length; 
+
+    updateCartBadge() {
+        document.getElementById('cartCount').innerText = state.cart.length;
+    },
+
+    showToast(message) {
+        if (document.getElementById('toast')) return;
+        
+        const toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.innerHTML = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--oro);
+            color: #050F0D;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: slideUp 3s forwards;
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2500);
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                0% { bottom: 100px; opacity: 0; }
+                20% { bottom: 110px; opacity: 1; }
+                80% { bottom: 110px; opacity: 1; }
+                100% { bottom: 100px; opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     }
 };
 
-// --- INICIO ---
-if (state.user) {
-    ui.initApp();
-} else {
-    ui.renderLogin();
-}
+// --- INICIO DE LA APLICACIÓN ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modalPizza').addEventListener('click', (e) => {
+        if (e.target.id === 'modalPizza') ui.closeModal();
+    });
+    
+    // Inicializar
+    if (state.user) {
+        ui.initApp();
+    } else {
+        ui.renderLogin();
+    }
+});
 </script>
 </body>
 </html>
