@@ -3,144 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahara - Sistema Integral</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <title>Sahara Pizzería | Sistema de Gestión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --oro-sahara: #D4AF37;
-            --negro-suave: #1A1A1A;
-            --gris-oscuro: #2D2D2D;
+            --oro: #D4AF37;
+            --negro: #121212;
+            --gris: #1E1E1E;
             --blanco: #FFFFFF;
-            --gris-claro: #B0B0B0;
-            --verde-exito: #27AE60;
+            --verde: #27AE60;
         }
 
-        body { font-family: 'Open Sans', sans-serif; background: var(--negro-suave); color: var(--blanco); margin: 0; padding-bottom: 90px; }
-        header { background: var(--gris-oscuro); padding: 15px; text-align: center; border-bottom: 2px solid var(--oro-sahara); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h1 { font-family: 'Montserrat', sans-serif; color: var(--oro-sahara); margin: 0; letter-spacing: 2px; }
-        
-        #app { padding: 20px; max-width: 600px; margin: auto; }
-        .card { background: var(--gris-oscuro); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid #444; transition: 0.3s; }
-        .card:hover { border-color: var(--oro-sahara); }
-        
-        .btn-primary { background: var(--oro-sahara); color: var(--negro-suave); border: none; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; text-transform: uppercase; }
-        
-        /* Estilo Cocina (Gramos) */
-        .gramos-box { margin-top: 15px; background: #222; padding: 12px; border-radius: 8px; border: 1px dashed #555; }
-        .item-g { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; }
-        .g-label { color: var(--gris-claro); }
-        .g-numb { color: var(--oro-sahara); font-family: 'Roboto Mono', monospace; font-weight: bold; }
+        body { font-family: 'Open Sans', sans-serif; background: var(--negro); color: var(--blanco); margin: 0; padding-bottom: 80px; }
+        header { background: var(--gris); padding: 20px; text-align: center; border-bottom: 3px solid var(--oro); }
+        h1 { font-family: 'Montserrat', sans-serif; color: var(--oro); margin: 0; letter-spacing: 3px; text-transform: uppercase; }
 
-        /* Navegación Inferior Estilo Sahara */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--gris-oscuro); display: flex; justify-content: space-around; align-items: center; height: 75px; border-top: 1px solid var(--oro-sahara); }
-        .nav-item { color: var(--gris-claro); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 11px; cursor: pointer; }
-        .nav-item.active { color: var(--oro-sahara); }
-        .order-btn { background: var(--oro-sahara); width: 75px; height: 75px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-top: -40px; border: 6px solid var(--negro-suave); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); }
+        #app { padding: 20px; max-width: 500px; margin: auto; }
+        .card { background: var(--gris); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        
+        .btn { background: var(--oro); color: var(--negro); border: none; padding: 15px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .btn-verde { background: var(--verde); color: white; }
 
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: white; text-align: center; font-size: 18px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #111; color: white; box-sizing: border-box; }
+
+        /* Estilo Menú */
+        .pizza-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 15px 0; }
+        .pizza-info h3 { margin: 0; font-size: 18px; }
+        .pizza-info span { color: var(--oro); font-size: 14px; font-weight: 600; }
+        .price { font-weight: 700; color: var(--oro); }
+
+        /* Nav Inferior */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--gris); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--oro); }
+        .nav-btn { color: #888; text-decoration: none; font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-btn.active { color: var(--oro); }
     </style>
 </head>
 <body>
 
-<header><h1>SAHARA</h1></header>
+<header><h1>Sahara</h1></header>
 
 <div id="app">
-    <div class="card" style="text-align: center;">
-        <h3>BIENVENIDO</h3>
-        <p>Ingresa tu Token de acceso</p>
-        <input type="password" id="tokenInput" placeholder="••••">
-        <button class="btn-primary" onclick="login()">ENTRAR</button>
+    <div id="login-screen" class="card">
+        <h2 style="text-align:center; color:var(--oro)">ACCESO</h2>
+        <input type="password" id="token" placeholder="Introduce tu Token" style="text-align:center">
+        <button class="btn" onclick="app.login()">Entrar</button>
     </div>
 </div>
 
-<nav class="bottom-nav" id="mainNav" style="display: none;">
-    <div class="nav-item" onclick="renderHome()"><span>🏠</span><span>INICIO</span></div>
-    <div class="nav-item order-btn" onclick="renderMenu()"> <span style="font-size: 30px;">🍕</span></div>
-    <div class="nav-item" onclick="renderKDS()"><span>👨‍🍳</span><span>COCINA</span></div>
+<nav id="main-nav" class="nav" style="display:none">
+    <div class="nav-btn" onclick="app.renderMenu()">🍕<br>Menú</div>
+    <div class="nav-btn" onclick="app.renderKDS()">👨‍🍳<br>Cocina</div>
+    <div class="nav-btn" onclick="app.renderAdmin()">📊<br>Admin</div>
 </nav>
 
 <script>
-    const CONFIG = {
-        URL: 'https://script.google.com/macros/s/AKfycbxRuWSGX24MbN6A2y8I4r0FcZpHPFTR2yvG-c-pOT8_WGnD9u-wzAXwOsF9mtq_AdA/exec'
-    };
+const CONFIG = {
+    URL: 'https://script.google.com/macros/s/AKfycbwz8A3n-6_AvnEif_X0h3_Rl_QwLLV9oP2n82Xlhw-8uTRpV4k7-G0EywIH7j9C0C4/exec'
+};
 
-    let userRole = '';
-    let userName = '';
+const app = {
+    user: null,
+    recetas: [],
 
-    function login() {
-        const t = document.getElementById('tokenInput').value;
-        if(t === '1234') { userRole = 'ADMIN'; userName = 'LP'; }
-        else if(t === '5555') { userRole = 'STAFF'; userName = 'Cocina'; }
-        else if(t === '0') { userRole = 'GUEST'; userName = 'Mesero'; }
-        else { alert("Token Inválido"); return; }
+    async login() {
+        const token = document.getElementById('token').value;
+        const resp = await fetch(`${CONFIG.URL}?pestaña=Usuarios`);
+        const usuarios = await resp.json();
         
-        document.getElementById('mainNav').style.display = 'flex';
-        renderHome();
-    }
-
-    async function callExcel(pestana) {
-        try {
-            const response = await fetch(`${CONFIG.URL}?pestaña=${pestana}`);
-            return await response.json();
-        } catch (e) {
-            console.error("Error de conexión");
-            return [];
+        this.user = usuarios.find(u => u.Token.toString() === token);
+        
+        if (this.user) {
+            document.getElementById('main-nav').style.display = 'flex';
+            this.renderMenu();
+        } else {
+            alert("Token no válido");
         }
-    }
+    },
 
-    function renderHome() {
+    async renderMenu() {
+        const container = document.getElementById('app');
+        container.innerHTML = "<p>Cargando sabores Sahara...</p>";
+        
+        if (this.recetas.length === 0) {
+            const resp = await fetch(`${CONFIG.URL}?pestaña=Recetas_Finales`);
+            this.recetas = await resp.json();
+        }
+
+        container.innerHTML = `<h2 style="color:var(--oro)">Menú</h2>`;
+        this.recetas.forEach((p, index) => {
+            container.innerHTML += `
+                <div class="card pizza-item">
+                    <div class="pizza-info">
+                        <h3>${p.Sabor}</h3>
+                        <span>${p.Tamaño}</span>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="price">$${p.Precio_Venta.toFixed(2)}</div>
+                        <button class="btn" style="padding:5px 10px; font-size:10px; margin-top:5px" onclick="app.hacerPedido(${index})">Pedir</button>
+                    </div>
+                </div>`;
+        });
+    },
+
+    async hacerPedido(index) {
+        const p = this.recetas[index];
+        const clienteNom = prompt("Nombre del Cliente:");
+        if (!clienteNom) return;
+
+        const confirmacion = confirm(`¿Confirmar ${p.Sabor} ${p.Tamaño} para ${clienteNom}?`);
+        if (!confirmacion) return;
+
+        // Estructura de datos para el Script Maestro v2
+        const pedidoData = {
+            accion: "REGISTRAR_PEDIDO",
+            cliente_nombre: clienteNom,
+            telefono: "S/N",
+            sucursal_id: 1,
+            tipo_servicio: "mesa",
+            metodo_pago: "efectivo",
+            total: p.Precio_Venta,
+            items: [{
+                pizza_id: index,
+                nombre: p.Sabor,
+                receta_id: p.Tamaño,
+                cantidad: 1,
+                precio_unitario: p.Precio_Venta
+            }]
+        };
+
+        alert("Enviando pedido a la nube...");
+
+        try {
+            await fetch(CONFIG.URL, {
+                method: 'POST',
+                mode: 'no-cors', // Evita el error de las imágenes
+                body: JSON.stringify(pedidoData)
+            });
+            alert("✅ ¡Pedido registrado en tu Excel!");
+        } catch (e) {
+            alert("Error al conectar");
+        }
+    },
+
+    async renderKDS() {
+        const container = document.getElementById('app');
+        container.innerHTML = `<h2 style="color:var(--oro)">Cocina (Gramos)</h2>`;
+        this.recetas.forEach(p => {
+            container.innerHTML += `
+                <div class="card">
+                    <h3 style="margin:0">${p.Sabor} (${p.Tamaño})</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; font-family:monospace; font-size:14px">
+                        <div>Masa: <b style="color:var(--oro)">${p.Masa_g}g</b></div>
+                        <div>Queso: <b style="color:var(--oro)">${p.Queso_g}g</b></div>
+                        <div>Pomo: <b style="color:var(--oro)">${p.Pomo_g}g</b></div>
+                        <div>Jamón: <b style="color:var(--oro)">${p.Jamon_g || 0}g</b></div>
+                    </div>
+                </div>`;
+        });
+    },
+
+    renderAdmin() {
         document.getElementById('app').innerHTML = `
             <div class="card">
-                <h2>Hola, ${userName}</h2>
-                <p>Estás en el panel de <b>${userRole}</b>.</p>
-                <hr style="border:0; border-top:1px solid #444; margin: 15px 0;">
-                <p style="font-size: 14px; color: var(--gris-claro);">Usa el botón central para tomar pedidos o el icono del chef para ver la cocina.</p>
-            </div>
-        `;
+                <h2 style="color:var(--oro)">Admin</h2>
+                <p>Usuario: ${this.user.Nombre}</p>
+                <p>Rol: ${this.user.Rol}</p>
+                <hr>
+                <button class="btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1qCZ74rC_kX-eG-C8Xz-g1x_xXm8f7_S7RFb8/edit')">Abrir Excel Real</button>
+            </div>`;
     }
-
-    async function renderMenu() {
-        const app = document.getElementById('app');
-        app.innerHTML = "<p style='text-align:center'>Cargando menú Sahara...</p>";
-        const datos = await callExcel('Recetas_Finales');
-        
-        app.innerHTML = "<h2>TOMAR PEDIDO</h2>";
-        datos.forEach(p => {
-            app.innerHTML += `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <h3 style="margin:0">${p.Sabor}</h3>
-                            <span style="color:var(--oro-sahara); font-size:12px;">${p.Tamaño}</span>
-                        </div>
-                        <button class="btn-primary" style="width:auto; padding: 8px 15px;" onclick="alert('Pedido enviado!')">AÑADIR</button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    async function renderKDS() {
-        const app = document.getElementById('app');
-        app.innerHTML = "<p style='text-align:center'>Consultando horno digital...</p>";
-        const datos = await callExcel('Recetas_Finales');
-        
-        app.innerHTML = "<h2>👨‍🍳 COCINA (KDS)</h2>";
-        datos.forEach(p => {
-            app.innerHTML += `
-                <div class="card">
-                    <h3 style="margin:0">${p.Sabor} <span style="font-size:12px; color:var(--oro-sahara)">(${p.Tamaño})</span></h3>
-                    <div class="gramos-box">
-                        <div class="item-g"><span class="g-label">Masa</span><span class="g-numb">${p.Masa_g}g</span></div>
-                        <div class="item-g"><span class="g-label">Pomodoro</span><span class="g-numb">${p.Pomo_g}g</span></div>
-                        <div class="item-g"><span class="g-label">Queso</span><span class="g-numb">${p.Queso_g}g</span></div>
-                        <div class="item-g"><span class="g-label">Jamón</span><span class="g-numb">${p.Jamon_g || 0}g</span></div>
-                    </div>
-                    <button class="btn-primary" style="background: var(--verde-exito); margin-top:15px;" onclick="this.parentElement.style.display='none'">MARCAR LISTO</button>
-                </div>
-            `;
-        });
-    }
+};
 </script>
 </body>
 </html>
