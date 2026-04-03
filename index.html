@@ -311,6 +311,7 @@
             gap: 4px;
             width: 33.33%;
             padding: 5px 0;
+            position: relative; /* ✅ CORRECCIÓN 3.2: Necesario para posicionar el badge */
         }
         .nav-btn.active { 
             color: var(--oro); 
@@ -468,15 +469,20 @@ const auth = {
             const resp = await fetch(`${CONFIG.URL}?pestaña=Usuarios`);
             const users = await resp.json();
             
-            const found = users.find(u => 
-                u.Token && u.Token.toString().trim() === clave
-            );
+            // ✅ CORRECCIÓN 3.1: Comparación normalizada de tokens (alfanuméricos)
+            const found = users.find(u => {
+                if (!u.Token || u.Activo !== "TRUE") return false;
+                const tokenSheet = u.Token.toString().trim().toLowerCase();
+                const tokenInput = clave.trim().toLowerCase();
+                return tokenSheet === tokenInput;
+            });
             
-            if (found && found.Activo === "TRUE") {
+            if (found) {
                 state.user = {
                     token: found.Token,
                     nombre: found.Nombre || 'Usuario',
                     rol: found.Rol || 'GUEST',
+                    telefono: found.Telefono || '', // ✅ CORRECCIÓN 3.5: Guardar teléfono del usuario registrado
                     acceso_bodega: found.Acceso_Bodega === "SI",
                     acceso_cocina: found.Acceso_Cocina === "SI",
                     acceso_menu: found.Acceso_Menu === "SI"
@@ -498,6 +504,7 @@ const auth = {
             token: '0', 
             nombre: 'Invitado', 
             rol: 'GUEST',
+            telefono: '', // ✅ CORRECCIÓN 3.5: Teléfono vacío para invitados
             acceso_bodega: false,
             acceso_cocina: false,
             acceso_menu: true
@@ -509,6 +516,62 @@ const auth = {
         localStorage.removeItem('sahara_session');
         state.user = null;
         ui.renderLogin();
+    },
+
+    // ✅ CORRECCIÓN 3.3: Registro de usuario (Fase 2 - acumular puntos)
+    async register() {
+        const nombre = document.getElementById('regNombre').value.trim();
+        const token = document.getElementById('regToken').value.trim();
+        const telefono = document.getElementById('regTelefono').value.trim();
+        
+        if (!nombre || !token || !telefono) {
+            return alert("⚠️ Todos los campos son obligatorios");
+        }
+        
+        if (token.length < 4) {
+            return alert("⚠️ El token debe tener al menos 4 caracteres");
+        }
+        
+        try {
+            // Verificar si el token ya existe
+            const resp = await fetch(`${CONFIG.URL}?pestaña=Usuarios`);
+            const users = await resp.json();
+            
+            const tokenExiste = users.some(u => 
+                u.Token && u.Token.toString().trim().toLowerCase() === token.toLowerCase()
+            );
+            
+            if (tokenExiste) {
+                return alert("⚠️ Este token ya está en uso. Elige otro.");
+            }
+            
+            // Insertar nuevo usuario en Google Sheets
+            const newUserData = {
+                Nombre: nombre,
+                Token: token,
+                Telefono: telefono,
+                Rol: 'CLIENTE',
+                Activo: 'TRUE',
+                Acceso_Bodega: 'NO',
+                Acceso_Cocina: 'NO',
+                Acceso_Menu: 'SI'
+            };
+            
+            // Usar la API para insertar (asumiendo que tu Apps Script lo soporta)
+            const insertResp = await fetch(CONFIG.URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...newUserData, accion: 'insertarUsuario' })
+            });
+            
+            alert("✅ ¡Cuenta creada exitosamente! Ahora puedes iniciar sesión con tu token.");
+            ui.renderLogin();
+            
+        } catch (e) {
+            console.error("Error registro:", e);
+            alert("⚠️ Error al crear cuenta. Intenta nuevamente.");
+        }
     }
 };
 
@@ -630,7 +693,7 @@ const ui = {
                 <p class="login-subtitle">Sabor que conecta</p>
                 
                 <div class="card">
-                    <input type="password" id="clave" placeholder="🔑 Clave de acceso" 
+                    <input type="password" id="clave" placeholder="🔑 Clave de acceso (token)" 
                            onkeypress="if(event.key==='Enter') auth.login()">
                     <button class="btn" onclick="auth.login()">INGRESAR</button>
                     
@@ -646,6 +709,50 @@ const ui = {
                         Tu pedido se procesa igual. Sin registro no acumulas puntos Sahara.
                     </p>
                 </div>
+                
+                <div class="card" style="margin-top:20px">
+                    <h3 style="color:var(--oro); text-align:center; margin-bottom:15px">¿Nuevo en Sahara?</h3>
+                    <button class="btn btn-ghost" onclick="ui.renderRegister()">
+                        📝 CREAR CUENTA Y ACUMULAR PUNTOS
+                    </button>
+                </div>
+            </div>`;
+    },
+
+    // ✅ CORRECCIÓN 3.3: Vista de registro
+    renderRegister() {
+        document.getElementById('app').innerHTML = `
+            <div class="card">
+                <h2 class="card-title">CREAR CUENTA SAHARA</h2>
+                <p style="color:var(--gris-claro); margin-bottom:20px;">
+                    Regístrate para acumular puntos y guardar tu historial
+                </p>
+                
+                <label style="display:block; margin-bottom:8px; color:var(--oro); font-weight:600">
+                    👤 Nombre completo
+                </label>
+                <input type="text" id="regNombre" placeholder="Ej: Juan Pérez">
+                
+                <label style="display:block; margin-bottom:8px; color:var(--oro); font-weight:600">
+                    🔑 Token personalizado (tu clave de acceso)
+                </label>
+                <input type="text" id="regToken" placeholder="Elige un token único (mínimo 4 caracteres)">
+                <small style="color:var(--gris-claro); display:block; margin-bottom:15px;">
+                    Este token lo usarás para iniciar sesión
+                </small>
+                
+                <label style="display:block; margin-bottom:8px; color:var(--oro); font-weight:600">
+                    📱 Teléfono / WhatsApp
+                </label>
+                <input type="tel" id="regTelefono" placeholder="Ej: 960916658">
+                
+                <button class="btn btn-success" onclick="auth.register()" style="margin-top:20px">
+                    CREAR CUENTA
+                </button>
+                
+                <button class="btn btn-ghost" onclick="ui.renderLogin()" style="margin-top:15px">
+                    ← VOLVER AL LOGIN
+                </button>
             </div>`;
     },
 
@@ -772,16 +879,16 @@ const ui = {
             </div>
             
             <div class="card">
-                <h3 style="color:var(--oro); margin-bottom:15px">.Tipo de servicio</h3>
+                <h3 style="color:var(--oro); margin-bottom:15px">Tipo de servicio</h3>
                 <select id="tipoServicio" class="input">
                     <option value="mesa">Comer en el local</option>
                     <option value="pickup">Recoger en tienda</option>
                     <option value="delivery">Delivery a domicilio</option>
                 </select>
                 
-                <div id="direccionField" style="display:none; margin-top:15px">
-                    <input type="text" id="direccion" placeholder="📍 Tu dirección completa">
-                </div>
+                <p style="color:var(--gris-claro); font-size:14px; margin-top:15px; text-align:center">
+                    📍 La dirección y teléfono se pedirán al confirmar según tu tipo de cuenta y servicio
+                </p>
                 
                 <button class="btn btn-success" style="margin-top:20px" 
                         onclick="ui.checkout(${total.toFixed(2)})">
@@ -792,36 +899,47 @@ const ui = {
                     Pago en efectivo al recibir tu pedido
                 </p>
             </div>`;
-        
-        // Mostrar/ocultar campo de dirección según tipo de servicio
-        document.getElementById('tipoServicio').addEventListener('change', (e) => {
-            document.getElementById('direccionField').style.display = 
-                e.target.value === 'delivery' ? 'block' : 'none';
-        });
     },
 
     async checkout(total) {
         const tipo = document.getElementById('tipoServicio').value;
-        const direccion = tipo === 'delivery' ? 
-                         document.getElementById('direccion').value.trim() : 
-                         'En local';
+        let direccion = '';
         
-        if (tipo === 'delivery' && !direccion) {
-            return alert("Por favor ingresa tu dirección para delivery");
-        }
-        
-        // ✅ Flujo para invitados: pedir teléfono obligatorio
-        let telefono = '';
+        // ✅ CORRECCIÓN 3.5: Pedir teléfono y dirección SOLO para delivery en cuenta anónima
         if (state.user.rol === 'GUEST') {
-            telefono = prompt("📱 Ingresa tu teléfono para confirmar el pedido:\n(Ej: 960916658)");
-            if (!telefono || telefono.length < 9) {
-                alert("Teléfono inválido. El pedido no fue enviado.");
-                return;
+            if (tipo === 'delivery') {
+                direccion = prompt("📍 Ingresa tu dirección completa para delivery:");
+                if (!direccion || direccion.trim() === '') {
+                    return alert("Dirección inválida. El pedido no fue enviado.");
+                }
+                
+                const telefono = prompt("📱 Ingresa tu teléfono para contacto del delivery:\n(Ej: 960916658)");
+                if (!telefono || telefono.length < 9) {
+                    alert("Teléfono inválido. El pedido no fue enviado.");
+                    return;
+                }
+                state.user.telefono = telefono;
+            } else {
+                // Para mesa o pickup, solo pedir teléfono si no tiene
+                if (!state.user.telefono) {
+                    const telefono = prompt("📱 Ingresa tu teléfono para confirmar el pedido:\n(Ej: 960916658)");
+                    if (!telefono || telefono.length < 9) {
+                        alert("Teléfono inválido. El pedido no fue enviado.");
+                        return;
+                    }
+                    state.user.telefono = telefono;
+                }
             }
-            state.user.telefono = telefono;
         } else {
-            telefono = state.user.telefono || 'S/N';
+            // Usuario registrado: usar su teléfono guardado
+            if (tipo === 'delivery' && !state.user.telefono) {
+                return alert("⚠️ No tienes teléfono registrado. Ve a tu perfil para agregarlo antes de pedir delivery.");
+            }
+            direccion = tipo === 'delivery' ? prompt("📍 Confirma o actualiza tu dirección de delivery:") : '';
         }
+        
+        const telefono = state.user.telefono || 'S/N';
+        const direccionFinal = tipo === 'delivery' ? (direccion || 'No especificada') : 'En local';
         
         // Preparar datos del pedido
         const pedido = {
@@ -833,7 +951,7 @@ const ui = {
             tipo_servicio: tipo,
             metodo_pago: 'efectivo',
             total: total,
-            notas: tipo === 'delivery' ? `Dirección: ${direccion}` : '',
+            notas: tipo === 'delivery' ? `Dirección: ${direccionFinal}` : '',
             items: state.cart.map(item => ({
                 pizza_id: 0,
                 nombre: `${item.nombre} ${item.size}`,
@@ -859,7 +977,7 @@ const ui = {
                 `¡Hola Sahara! Quiero confirmar mi pedido:\n` +
                 `Total: $${total.toFixed(2)}\n` +
                 `Servicio: ${tipo === 'mesa' ? 'En local' : tipo === 'pickup' ? 'Recoger' : 'Delivery'}\n` +
-                `${tipo === 'delivery' ? `Dirección: ${direccion}\n` : ''}` +
+                `${tipo === 'delivery' ? `Dirección: ${direccionFinal}\n` : ''}` +
                 `Teléfono: ${telefono}\n\n` +
                 `Detalle:\n${state.cart.map(i => `• ${i.nombre} ${i.size} $${i.precio.toFixed(2)}`).join('\n')}`
             );
@@ -880,6 +998,8 @@ const ui = {
     renderProfile() {
         if (!state.user) return this.renderLogin();
         
+        const telefonoDisplay = state.user.telefono || 'No registrado';
+        
         document.getElementById('app').innerHTML = `
             <div class="card">
                 <h2 class="card-title">MI CUENTA</h2>
@@ -888,6 +1008,9 @@ const ui = {
                     <h3 style="font-size:24px; margin-bottom:5px">${state.user.nombre}</h3>
                     <p style="color:var(--gris-claro)">
                         ${state.user.rol === 'GUEST' ? 'Invitado' : state.user.rol}
+                    </p>
+                    <p style="color:var(--oro); margin-top:10px; font-weight:600">
+                        📱 ${telefonoDisplay}
                     </p>
                 </div>
                 
@@ -898,16 +1021,41 @@ const ui = {
                             🔹 No guardamos tu historial de pedidos<br>
                             🔹 Puedes pedir normalmente sin problemas
                         </p>
-                        <button class="btn btn-ghost" onclick="alert('Función disponible en Fase 3')">
-                            Registrarme para acumular puntos
+                        <button class="btn btn-success" onclick="ui.renderRegister()" style="margin-bottom:10px">
+                            📝 CREAR CUENTA Y ACUMULAR PUNTOS
+                        </button>
+                        <button class="btn btn-ghost" onclick="auth.logout(); ui.renderLogin()" style="margin-bottom:10px">
+                            🔑 INICIAR SESIÓN
                         </button>
                     </div>
-                ` : ''}
+                ` : `
+                    <div style="background:rgba(30,50,45,0.7); border-radius:12px; padding:15px; margin:20px 0">
+                        <h4 style="color:var(--oro); margin-bottom:15px">✏️ EDITAR TELÉFONO</h4>
+                        <input type="tel" id="editTelefono" value="${state.user.telefono || ''}" 
+                               placeholder="Ej: 960916658">
+                        <button class="btn btn-success" onclick="ui.updateTelefono()" style="margin-top:10px">
+                            GUARDAR NUEVO TELÉFONO
+                        </button>
+                    </div>
+                `}
                 
                 <button class="btn btn-rojo" onclick="auth.logout()" style="margin-top:20px">
-                    CERRAR SESIÓN
+                    ${state.user.rol === 'GUEST' ? 'VOLVER AL INICIO' : 'CERRAR SESIÓN'}
                 </button>
             </div>`;
+    },
+
+    // ✅ CORRECCIÓN 3.5: Actualizar teléfono en perfil
+    updateTelefono() {
+        const nuevoTelefono = document.getElementById('editTelefono').value.trim();
+        if (!nuevoTelefono || nuevoTelefono.length < 9) {
+            return alert("⚠️ Ingresa un teléfono válido (mínimo 9 dígitos)");
+        }
+        
+        state.user.telefono = nuevoTelefono;
+        localStorage.setItem('sahara_session', JSON.stringify(state.user));
+        this.showToast("✅ Teléfono actualizado correctamente");
+        this.renderProfile();
     },
 
     closeModal() {
@@ -960,6 +1108,18 @@ const ui = {
 
 // --- INICIO DE LA APLICACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
+    // ✅ CORRECCIÓN 3.4: Mantener sesión al recargar (F5)
+    const savedSession = localStorage.getItem('sahara_session');
+    if (savedSession) {
+        try {
+            state.user = JSON.parse(savedSession);
+        } catch (e) {
+            console.error("Error al cargar sesión:", e);
+            localStorage.removeItem('sahara_session');
+            state.user = null;
+        }
+    }
+    
     // Cerrar modal al hacer clic fuera
     document.getElementById('modalPizza').addEventListener('click', (e) => {
         if (e.target.id === 'modalPizza') ui.closeModal();
